@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lemonade — Legal</title>
+    <meta
+      name="description"
+      content="Privacy Policy and Terms of Service for Lemonade, a Lemmy client app."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page-home">
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="/">Lemonade</a>
+        <nav class="nav" aria-label="Legal">
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/terms">Terms of Service</a>
+          <a href="/child-safety">Child Safety</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="wrap stack">
+        <section class="card">
+          <div class="card-header">
+            <h1>Legal</h1>
+            <p class="lead">
+              Lemonade is a mobile client for the Lemmy federated social
+              network. Review our policies below.
+            </p>
+          </div>
+          <ul class="list">
+            <li>
+              <a class="list-row" href="/privacy">
+                <div class="list-row-text">
+                  <p class="list-row-title">Privacy Policy</p>
+                  <p class="list-row-subtitle">
+                    Credentials, local storage, ads, purchases, and instances
+                  </p>
+                </div>
+                <svg
+                  class="list-row-chevron"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M9 6l6 6-6 6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a class="list-row" href="/terms">
+                <div class="list-row-text">
+                  <p class="list-row-title">Terms of Service</p>
+                  <p class="list-row-subtitle">
+                    Usage rules, subscriptions, content, and liability
+                  </p>
+                </div>
+                <svg
+                  class="list-row-chevron"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M9 6l6 6-6 6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            </li>
+            <li>
+              <a class="list-row" href="/child-safety">
+                <div class="list-row-text">
+                  <p class="list-row-title">Child Safety Standards</p>
+                  <p class="list-row-subtitle">
+                    CSAE / CSAM policy, reporting, and contact
+                  </p>
+                </div>
+                <svg
+                  class="list-row-chevron"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M9 6l6 6-6 6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <p class="home-meta">
+          App package: <code>com.thezello.lemonade</code>
+        </p>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <span>© <span id="y"></span> Lemonade</span>
+        <span>
+          Contact:
+          <a href="mailto:support@example.com">support@example.com</a>
+        </span>
+      </div>
+    </footer>
+    <script>
+      document.getElementById("y").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>

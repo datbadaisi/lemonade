@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy Policy — Lemonade</title>
+    <meta
+      name="description"
+      content="Privacy Policy for Lemonade (com.thezello.lemonade), a Lemmy client app."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="/">Lemonade</a>
+        <nav class="nav" aria-label="Legal">
+          <a href="/privacy" aria-current="page">Privacy Policy</a>
+          <a href="/terms">Terms of Service</a>
+          <a href="/child-safety">Child Safety</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="wrap">
+        <section class="card">
+          <div class="card-header">
+            <h1>Privacy Policy</h1>
+            <p class="lead">
+              This Privacy Policy explains how Lemonade (“the App”, “we”, “us”)
+              handles information when you use our Lemmy client.
+            </p>
+            <p class="meta">
+              Effective date: July 18, 2026 · Last updated: July 18, 2026<br />
+              App: Lemonade · Package: <code>com.thezello.lemonade</code>
+            </p>
+          </div>
+          <div class="card-body">
+            <article class="prose">
+          <div class="toc">
+            <strong>Contents</strong>
+            <ol>
+              <li><a href="#who">Who we are</a></li>
+              <li><a href="#summary">Summary</a></li>
+              <li><a href="#collect">Information we handle</a></li>
+              <li><a href="#use">How we use information</a></li>
+              <li><a href="#third">Third-party services</a></li>
+              <li><a href="#storage">Storage, security &amp; retention</a></li>
+              <li><a href="#rights">Your choices &amp; rights</a></li>
+              <li><a href="#children">Children</a></li>
+              <li><a href="#international">International users</a></li>
+              <li><a href="#changes">Changes</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ol>
+          </div>
+
+          <h2 id="who">1. Who we are</h2>
+          <p>
+            Lemonade is a mobile application that lets you browse and interact
+            with Lemmy — a federated, open-source social network. Lemonade does
+            <strong>not</strong> operate Lemmy instances. You choose which
+            instance(s) to connect to (for example, a default such as
+            <code>lemmy.zip</code> or any other compatible instance URL you
+            enter).
+          </p>
+          <p>
+            Operator contact:
+            <a href="mailto:support@example.com">support@example.com</a>
+          </p>
+
+          <h2 id="summary">2. Summary</h2>
+          <ul>
+            <li>
+              <strong>Account login happens on your chosen Lemmy instance.</strong>
+              We do not run a separate Lemonade user database for social content.
+            </li>
+            <li>
+              <strong>Session data is stored on your device</strong> (JWT tokens,
+              instance URL, username, multi-account list, and app preferences).
+            </li>
+            <li>
+              <strong>Advertising</strong> may be shown via Google AdMob unless
+              you remove ads or disable ads in settings where available.
+            </li>
+            <li>
+              <strong>In-app purchases</strong> (remove-ads subscriptions /
+              lifetime unlock) are processed by Google Play / App Store and may
+              be validated through RevenueCat.
+            </li>
+            <li>
+              <strong>Optional feedback</strong> you submit may include your
+              message plus basic context (e.g. username and instance host).
+            </li>
+          </ul>
+
+          <h2 id="collect">3. Information we handle</h2>
+
+          <h3>3.1 Information you provide</h3>
+          <ul>
+            <li>
+              <strong>Lemmy credentials &amp; account details.</strong> When you
+              log in, you enter a username/email and password (or other auth
+              method supported by the instance). These credentials are sent to
+              the Lemmy instance you select. Lemonade stores the returned session
+              token (JWT) and related profile fields (e.g. username, person ID,
+              avatar URL, instance URL) locally so you can stay signed in and
+              switch accounts.
+            </li>
+            <li>
+              <strong>Content you create.</strong> Posts, comments, messages,
+              votes, community subscriptions, blocks, profile edits, and media
+              you upload are sent to the Lemmy instance API. That content is
+              governed by the instance’s own policies and the broader fediverse,
+              not solely by this App.
+            </li>
+            <li>
+              <strong>Feedback.</strong> If you use the in-app feedback form,
+              your message may be sent to our feedback collection endpoint
+              (currently a Google Form) and may include optional context such as
+              your Lemmy username and instance host.
+            </li>
+          </ul>
+
+          <h3>3.2 Information stored on your device</h3>
+          <p>Examples of data kept in on-device storage (e.g. SharedPreferences):</p>
+          <ul>
+            <li>JWT / session tokens for one or more saved accounts</li>
+            <li>Instance base URLs and active account selection</li>
+            <li>Username, person ID, avatar reference</li>
+            <li>
+              App preferences (e.g. sort defaults, ads enabled/disabled,
+              remove-ads entitlement flags)
+            </li>
+          </ul>
+          <p>
+            Uninstalling the App or clearing app data removes this local storage
+            on that device.
+          </p>
+
+          <h3>3.3 Information collected automatically by third parties</h3>
+          <ul>
+            <li>
+              <strong>Advertising (Google Mobile Ads / AdMob).</strong> When ads
+              are enabled, Google and its partners may collect device and
+              advertising identifiers, IP address, approximate location derived
+              from IP, app interaction and diagnostic data, and similar signals
+              used to serve, measure, and personalize ads (subject to your
+              device settings and applicable law).
+            </li>
+            <li>
+              <strong>Purchases (Google Play Billing / App Store / RevenueCat).</strong>
+              If you buy a remove-ads product, the store and RevenueCat may
+              process purchase tokens, product identifiers, entitlement status,
+              and limited device/app identifiers needed to validate purchases
+              and restore entitlements. We do not receive your full payment card
+              number.
+            </li>
+            <li>
+              <strong>Network traffic to Lemmy instances.</strong> Your device
+              communicates directly with the instance APIs you use. Those
+              servers (and any servers they federate with) may log IP addresses,
+              user agents, and content according to their own practices.
+            </li>
+          </ul>
+
+          <h3>3.4 Information we do not intentionally collect</h3>
+          <p>
+            Lemonade is not designed to operate a central Lemonade cloud account
+            that stores your feed, private messages, or password on our own
+            servers. We do not sell your personal information.
+          </p>
+
+          <h2 id="use">4. How we use information</h2>
+          <ul>
+            <li>Provide core client features (feed, posts, comments, search, profile, communities, chat/notifications as supported).</li>
+            <li>Keep you signed in and support multi-account switching on-device.</li>
+            <li>Show advertising and measure ad performance, unless ads are removed or disabled.</li>
+            <li>Process and restore remove-ads purchases and related entitlements.</li>
+            <li>Receive and review optional product feedback.</li>
+            <li>Maintain security, debug issues, and improve the App.</li>
+            <li>Comply with legal obligations and enforce our Terms of Service.</li>
+          </ul>
+
+          <h2 id="third">5. Third-party services</h2>
+          <p>
+            The App relies on third parties that have their own privacy
+            policies. Please review them:
+          </p>
+          <ul>
+            <li>
+              <strong>Lemmy instances you choose</strong> — each instance
+              operator controls its own data practices. Content may also be
+              federated to other servers in the network.
+            </li>
+            <li>
+              <strong>Google AdMob / Google Mobile Ads</strong> —
+              <a
+                href="https://policies.google.com/privacy"
+                rel="noopener noreferrer"
+                target="_blank"
+                >Google Privacy Policy</a
+              >
+              and
+              <a
+                href="https://support.google.com/admob/answer/6128543"
+                rel="noopener noreferrer"
+                target="_blank"
+                >AdMob help</a
+              >.
+            </li>
+            <li>
+              <strong>Google Play / Apple App Store</strong> — purchase and
+              account handling by the respective store.
+            </li>
+            <li>
+              <strong>RevenueCat</strong> —
+              <a
+                href="https://www.revenuecat.com/privacy"
+                rel="noopener noreferrer"
+                target="_blank"
+                >RevenueCat Privacy Policy</a
+              >
+              (subscription / entitlement validation).
+            </li>
+            <li>
+              <strong>Google Forms</strong> (if used for feedback) —
+              <a
+                href="https://policies.google.com/privacy"
+                rel="noopener noreferrer"
+                target="_blank"
+                >Google Privacy Policy</a
+              >.
+            </li>
+            <li>
+              <strong>Firebase Hosting</strong> (this legal website) —
+              <a
+                href="https://firebase.google.com/support/privacy"
+                rel="noopener noreferrer"
+                target="_blank"
+                >Firebase Privacy &amp; Security</a
+              >.
+            </li>
+          </ul>
+          <p>
+            Links open third-party sites or content hosted on Lemmy instances.
+            We are not responsible for third-party privacy practices.
+          </p>
+
+          <h2 id="storage">6. Storage, security &amp; retention</h2>
+          <ul>
+            <li>
+              <strong>Local storage.</strong> Session tokens and preferences
+              remain on your device until you log out, remove an account, clear
+              app data, or uninstall.
+            </li>
+            <li>
+              <strong>Security.</strong> We use industry-standard transport
+              security (HTTPS) when talking to Lemmy APIs and third-party SDKs.
+              No method of electronic storage or transmission is 100% secure.
+              Protect your device lock screen and Lemmy passwords.
+            </li>
+            <li>
+              <strong>Retention on instances.</strong> Content and account data
+              on Lemmy servers are retained according to each instance’s
+              policies. Deleting content or accounts must be done through the
+              instance tools/APIs where available; uninstalling Lemonade alone
+              does not delete remote content.
+            </li>
+            <li>
+              <strong>Feedback &amp; purchase records.</strong> Feedback may be
+              retained as long as needed to review product issues. Purchase
+              records may be retained by the store and RevenueCat as required
+              for accounting, fraud prevention, and entitlement restoration.
+            </li>
+          </ul>
+
+          <h2 id="rights">7. Your choices &amp; rights</h2>
+          <ul>
+            <li>
+              <strong>Log out / remove accounts</strong> in the App to clear
+              local session data for those accounts.
+            </li>
+            <li>
+              <strong>Ads.</strong> You may purchase remove-ads, use in-app
+              controls where available, or adjust device advertising settings
+              (e.g. limit ad tracking / delete advertising ID) according to your
+              OS.
+            </li>
+            <li>
+              <strong>Subscriptions.</strong> Manage or cancel auto-renewing
+              subscriptions in Google Play or the App Store account settings.
+            </li>
+            <li>
+              <strong>Instance privacy requests.</strong> For data held by a
+              Lemmy instance (profile, posts, messages), contact that instance’s
+              administrators or use instance tools.
+            </li>
+            <li>
+              <strong>Contact us</strong> at
+              <a href="mailto:support@example.com"
+                >support@example.com</a
+              >
+              for privacy questions about the App itself. Depending on your
+              location, you may have rights to access, correct, delete, or
+              restrict certain processing, or to lodge a complaint with a
+              supervisory authority.
+            </li>
+          </ul>
+
+          <h2 id="children">8. Children</h2>
+          <p>
+            Lemonade is not directed to children under 13 (or the minimum age
+            required in your country). We do not knowingly collect personal
+            information from children under that age. If you believe a child has
+            provided personal information through the App, contact us and we will
+            take reasonable steps to delete local App-related data we control.
+          </p>
+
+          <h2 id="international">9. International users</h2>
+          <p>
+            You may access instances and services located in other countries.
+            When you use Lemonade, information may be processed in the country
+            where your device is located, where the Lemmy instance is hosted, and
+            where third-party providers (e.g. Google, RevenueCat) operate.
+          </p>
+
+          <h2 id="changes">10. Changes to this policy</h2>
+          <p>
+            We may update this Privacy Policy from time to time. The “Last
+            updated” date at the top will change when we do. Continued use of
+            the App after an update means you acknowledge the revised policy.
+            Material changes may also be highlighted in the App store listing or
+            in-app notice when practical.
+          </p>
+
+          <h2 id="contact">11. Contact</h2>
+          <p>
+            Questions about this Privacy Policy or Lemonade privacy practices:
+          </p>
+          <p>
+            Email:
+            <a href="mailto:support@example.com"
+              >support@example.com</a
+            ><br />
+            Related:
+            <a href="/terms">Terms of Service</a>
+          </p>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <span>© <span id="y"></span> Lemonade</span>
+        <div class="footer-links">
+          <a href="/">Home</a>
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/terms">Terms of Service</a>
+          <a href="/child-safety">Child Safety</a>
+        </div>
+      </div>
+    </footer>
+    <script>
+      document.getElementById("y").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
