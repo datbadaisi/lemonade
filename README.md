@@ -4,6 +4,26 @@ A Flutter client for [Lemmy](https://join-lemmy.org) with a clean, minimal, and 
 
 ---
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/images/lemmy-world/screenshot-01.png" alt="Lemonade home feed" width="30%" />
+  <img src="docs/images/lemmy-world/screenshot-02.png" alt="Lemonade post view" width="30%" />
+  <img src="docs/images/lemmy-world/screenshot-03.png" alt="Lemonade community view" width="30%" />
+</p>
+<p align="center">
+  <img src="docs/images/lemmy-world/screenshot-04.png" alt="Lemonade search" width="30%" />
+  <img src="docs/images/lemmy-world/screenshot-05.png" alt="Lemonade comments" width="30%" />
+  <img src="docs/images/lemmy-world/screenshot-06.png" alt="Lemonade account" width="30%" />
+</p>
+<p align="center">
+  <img src="docs/images/lemmy-world/screenshot-07.png" alt="Lemonade settings" width="30%" />
+  <img src="docs/images/lemmy-world/screenshot-08.png" alt="Lemonade dark theme" width="30%" />
+  <img src="docs/images/lemmy-world/screenshot-09.png" alt="Lemonade profile" width="30%" />
+</p>
+
+---
+
 ## Getting Started
 
 ```bash
