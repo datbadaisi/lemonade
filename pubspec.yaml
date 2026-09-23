@@ -54,7 +54,7 @@ dependencies:
   path_provider: ^2.1.5
   ming_cute_icons: ^0.0.8
   google_mobile_ads: ^9.0.0
-  purchases_flutter: ^10.4.1
+  in_app_purchase: ^3.3.1
 
 dev_dependencies:
   flutter_test:

@@ -12,11 +12,11 @@ class RemoveAdsHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = entitled
         ? 'Thank you for supporting Lemonade! Your support keeps the app '
-            'growing — we truly appreciate it. Cancel anytime in Manage '
-            'subscription.'
+              'growing — we truly appreciate it. You are ad-free forever '
+              'on this store account.'
         : 'Support Lemonade. Every glass of lemonade helps keep the app '
-            'independent and built with care. Cancel anytime in Manage '
-            'subscription.';
+              'independent and built with care. Pay once and stay ad-free '
+              'forever.';
 
     return Padding(
       padding: const EdgeInsets.only(top: 8),
@@ -165,7 +165,7 @@ class RemoveAdsPrimaryButton extends StatelessWidget {
   }
 }
 
-/// Secondary full-width outline (Manage subscription, "You're on this plan").
+/// Secondary full-width outline for the lifetime status state.
 class RemoveAdsOutlineButton extends StatelessWidget {
   const RemoveAdsOutlineButton({
     super.key,
@@ -193,25 +193,22 @@ class RemoveAdsOutlineButton extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
       ),
     );
   }
 }
 
-/// Subscription follows the store account, not Lemmy login.
+/// Purchases follow the store account, not the Lemmy login.
 class RemoveAdsStoreAccountNotice extends StatelessWidget {
   const RemoveAdsStoreAccountNotice({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Text(
-      'Linked to your Google Play account — not your Lemmy login. '
-      'On another phone, sign in with the same Play account and tap Restore purchases.',
+      'Linked to your Google Play or App Store account — not your Lemmy login. '
+      'On another device, use the same store account and tap Restore purchases.',
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: 11,
@@ -229,14 +226,9 @@ class RemoveAdsConfigHint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Text(
-      'RevenueCat API key is not set for this build. Paste your public key '
-      '(goog_… / appl_…) into RevenueCatConfig or pass it with '
-      '--dart-define when building.\n\n'
-      'Play catalog: one subscription remove_ads with base plans monthly '
-      '(\$1.99) and yearly (\$9.99), plus one-time remove_ads_lifetime '
-      '(\$19.99). Full store ids: remove_ads:monthly / remove_ads:yearly. '
-      'Attach all to entitlement remove_ads; Offering packages: monthly + '
-      'annual + lifetime.',
+      'The store is unavailable or the lifetime product is not configured '
+      'for this build. Check the Google Play / App Store product '
+      'remove_ads_lifetime and try again.',
       style: TextStyle(
         fontSize: 12,
         height: 1.4,
@@ -276,9 +268,7 @@ class RemoveAdsErrorBody extends StatelessWidget {
             const SizedBox(height: 16),
             TextButton(
               onPressed: onRetry,
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.action,
-              ),
+              style: TextButton.styleFrom(foregroundColor: AppColors.action),
               child: const Text(
                 'Retry',
                 style: TextStyle(fontWeight: FontWeight.w600),

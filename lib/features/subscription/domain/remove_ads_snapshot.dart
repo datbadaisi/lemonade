@@ -1,73 +1,36 @@
-import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 
-import 'package:bluerum/features/subscription/domain/remove_ads_offering.dart';
-import 'package:bluerum/features/subscription/domain/revenuecat_config.dart';
+import 'package:bluerum/features/subscription/domain/lifetime_purchase_config.dart';
 
-/// Canonical store-backed remove-ads entitlement snapshot.
+/// Store-backed state for the lifetime remove-ads product.
 ///
-/// Single source of truth derived from one [CustomerInfo] read. When
-/// [entitled] is false, [plan] and [subscriptionProductId] are always null.
+/// With no backend, the safest client-only gate is the store's
+/// purchased/restored status, the exact product ID, and a non-empty store
+/// verification payload. Cryptographic receipt verification would require a
+/// platform-specific verifier or a trusted server and is intentionally not
+/// claimed here.
 final class RemoveAdsSnapshot {
-  const RemoveAdsSnapshot({
-    required this.entitled,
-    this.plan,
-    this.subscriptionProductId,
-    this.managementUrl,
-  });
+  const RemoveAdsSnapshot({required this.entitled, this.productId});
 
   static const empty = RemoveAdsSnapshot(entitled: false);
 
-  /// Whether the remove-ads entitlement is active on the store account.
   final bool entitled;
+  final String? productId;
 
-  /// Active plan when entitled and mappable; null if unmapped or not entitled.
-  final RemoveAdsPlan? plan;
-
-  /// Store product id for Play product-change (`productId:basePlanId` when needed).
-  final String? subscriptionProductId;
-
-  /// RevenueCat management URL when present.
-  final String? managementUrl;
-
-  /// Builds a snapshot from [CustomerInfo]. Clears plan/product when not entitled.
-  factory RemoveAdsSnapshot.fromCustomerInfo(CustomerInfo info) {
-    final entitlement =
-        info.entitlements.all[RevenueCatConfig.entitlementRemoveAds];
-    final active = entitlement != null && entitlement.isActive;
-    final managementUrl =
-        (info.managementURL != null && info.managementURL!.isNotEmpty)
-            ? info.managementURL
-            : null;
-
-    if (!active) {
-      return RemoveAdsSnapshot(
-        entitled: false,
-        managementUrl: managementUrl,
-      );
-    }
-
-    final plan = removeAdsPlanFromEntitlement(
-      productIdentifier: entitlement.productIdentifier,
-      productPlanIdentifier: entitlement.productPlanIdentifier,
-    );
-    final productId = _subscriptionProductIdFromEntitlement(entitlement);
+  factory RemoveAdsSnapshot.fromPurchase(PurchaseDetails purchase) {
+    final isLifetime = purchase.productID == LifetimePurchaseConfig.productId;
+    final isOwned =
+        purchase.status == PurchaseStatus.purchased ||
+        purchase.status == PurchaseStatus.restored;
+    final hasStoreVerificationPayload =
+        purchase.verificationData.localVerificationData.trim().isNotEmpty &&
+        purchase.verificationData.serverVerificationData.trim().isNotEmpty;
 
     return RemoveAdsSnapshot(
-      entitled: true,
-      plan: plan,
-      subscriptionProductId: productId,
-      managementUrl: managementUrl,
+      entitled: isLifetime && isOwned && hasStoreVerificationPayload,
+      productId: isLifetime && isOwned && hasStoreVerificationPayload
+          ? purchase.productID
+          : null,
     );
   }
-}
-
-/// Play product-change id: `productId:basePlanId` when base plan is separate.
-String? _subscriptionProductIdFromEntitlement(EntitlementInfo entitlement) {
-  final product = entitlement.productIdentifier.trim();
-  if (product.isEmpty) return null;
-  final plan = entitlement.productPlanIdentifier?.trim();
-  if (plan != null && plan.isNotEmpty && !product.contains(':')) {
-    return '$product:$plan';
-  }
-  return product;
 }

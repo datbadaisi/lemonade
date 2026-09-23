@@ -3,7 +3,6 @@ import 'package:bluerum/core/constants/storage_keys.dart';
 import 'package:bluerum/core/storage/key_value_store.dart';
 import 'package:bluerum/features/ads/data/ads_settings.dart';
 import 'package:bluerum/features/subscription/data/subscription_providers.dart';
-import 'package:bluerum/features/subscription/domain/remove_ads_offering.dart';
 import 'package:bluerum/features/subscription/domain/remove_ads_snapshot.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,81 +34,65 @@ void main() {
     setUp(() {
       store = _MemoryStore();
       container = ProviderContainer(
-        overrides: [
-          keyValueStoreProvider.overrideWithValue(store),
-        ],
+        overrides: [keyValueStoreProvider.overrideWithValue(store)],
       );
     });
 
     tearDown(() => container.dispose());
 
-    test('applySnapshot sets plan when entitled', () {
-      container.read(removeAdsEntitlementProvider.notifier).applySnapshot(
+    test('applies a lifetime snapshot', () {
+      container
+          .read(removeAdsEntitlementProvider.notifier)
+          .applySnapshot(
             const RemoveAdsSnapshot(
               entitled: true,
-              plan: RemoveAdsPlan.monthly,
-              subscriptionProductId: 'remove_ads:monthly',
+              productId: 'remove_ads_lifetime',
             ),
           );
+
       final state = container.read(removeAdsEntitlementProvider);
       expect(state.entitled, isTrue);
-      expect(state.plan, RemoveAdsPlan.monthly);
-      expect(state.subscriptionProductId, 'remove_ads:monthly');
+      expect(state.lifetimeOwned, isTrue);
+      expect(state.productId, 'remove_ads_lifetime');
       expect(state.storeSynced, isTrue);
     });
 
-    test('applySnapshot clears plan and product when not entitled (cancel)', () {
+    test('clears lifetime state when store says not entitled', () {
       final notifier = container.read(removeAdsEntitlementProvider.notifier);
       notifier.applySnapshot(
         const RemoveAdsSnapshot(
           entitled: true,
-          plan: RemoveAdsPlan.yearly,
-          subscriptionProductId: 'remove_ads:yearly',
+          productId: 'remove_ads_lifetime',
         ),
       );
       notifier.applySnapshot(const RemoveAdsSnapshot(entitled: false));
 
       final state = container.read(removeAdsEntitlementProvider);
       expect(state.entitled, isFalse);
-      expect(state.plan, isNull);
-      expect(state.subscriptionProductId, isNull);
+      expect(state.productId, isNull);
       expect(state.storeSynced, isTrue);
     });
 
-    test('applyVerifiedSnapshot mirrors adsRemoved only when entitled', () async {
-      final notifier = container.read(removeAdsEntitlementProvider.notifier);
+    test(
+      'persists ads removal only for an entitled lifetime purchase',
+      () async {
+        final notifier = container.read(removeAdsEntitlementProvider.notifier);
 
-      await notifier.applyVerifiedSnapshot(
-        const RemoveAdsSnapshot(
-          entitled: true,
-          plan: RemoveAdsPlan.monthly,
-          subscriptionProductId: 'remove_ads:monthly',
-        ),
-      );
-      expect(container.read(adsSettingsProvider).adsRemoved, isTrue);
-      expect(store.getString(StorageKeys.adsRemoved), '1');
+        await notifier.applyPurchaseSnapshot(
+          const RemoveAdsSnapshot(
+            entitled: true,
+            productId: 'remove_ads_lifetime',
+          ),
+        );
+        expect(container.read(adsSettingsProvider).adsRemoved, isTrue);
+        expect(store.getString(StorageKeys.adsRemoved), '1');
 
-      await notifier.applyVerifiedSnapshot(
-        const RemoveAdsSnapshot(entitled: false),
-      );
-      expect(container.read(adsSettingsProvider).adsRemoved, isFalse);
-      expect(store.getString(StorageKeys.adsRemoved), isNull);
-      expect(container.read(removeAdsEntitlementProvider).plan, isNull);
-    });
-
-    test('applyVerifiedSnapshot uses fallbackPlan when snapshot plan null', () async {
-      await container.read(removeAdsEntitlementProvider.notifier).applyVerifiedSnapshot(
-            const RemoveAdsSnapshot(
-              entitled: true,
-              plan: null,
-              subscriptionProductId: 'remove_ads:monthly',
-            ),
-            fallbackPlan: RemoveAdsPlan.monthly,
-          );
-      expect(
-        container.read(removeAdsEntitlementProvider).plan,
-        RemoveAdsPlan.monthly,
-      );
-    });
+        await notifier.applyPurchaseSnapshot(
+          const RemoveAdsSnapshot(entitled: false),
+        );
+        expect(container.read(adsSettingsProvider).adsRemoved, isFalse);
+        expect(store.getString(StorageKeys.adsRemoved), isNull);
+      },
+    );
   });
 }

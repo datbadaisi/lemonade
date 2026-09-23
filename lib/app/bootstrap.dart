@@ -34,13 +34,10 @@ Future<void> bootstrap() async {
   );
 
   runApp(
-    UncontrolledProviderScope(
-      container: container,
-      child: const BluerumApp(),
-    ),
+    UncontrolledProviderScope(container: container, child: const BluerumApp()),
   );
 
-  // Defer Mobile Ads + RevenueCat until after the first two frames so cold
+  // Defer Mobile Ads + in-app purchases until after the first two frames so cold
   // start does not race WebView/Dynamite/Billing against first paint
   // (profile: Choreographer "Skipped ~30 frames" on A16 when both ran
   // before runApp returned). InFeedNativeAd awaits [initializeMobileAds].
@@ -49,7 +46,7 @@ Future<void> bootstrap() async {
       // ignore: unawaited_futures
       initializeMobileAds();
       // ignore: unawaited_futures
-      container.read(subscriptionBootstrapProvider.future);
+      container.read(lifetimePurchaseBootstrapProvider.future);
     });
   });
 

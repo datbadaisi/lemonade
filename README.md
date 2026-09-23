@@ -34,7 +34,7 @@ flutter run
 
 ## Configuration (Optional)
 
-To configure production AdMob, RevenueCat, or custom support email:
+To configure production AdMob or custom support email:
 
 1. Copy [`config.example.json`](config.example.json) to `config.json`:
    ```bash
