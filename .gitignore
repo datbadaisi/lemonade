@@ -32,6 +32,7 @@ openapi.json
 .pub-cache/
 .pub/
 /build/
+/android/build/
 /.gradle-user-home/
 /coverage/
 
