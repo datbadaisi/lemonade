@@ -6,6 +6,7 @@ import 'package:bluerum/features/ads/data/ads_settings.dart';
 import 'package:bluerum/features/ads/domain/ads_config.dart';
 import 'package:bluerum/features/ads/domain/ads_placement.dart';
 import 'package:bluerum/features/ads/presentation/in_feed_native_ad.dart';
+import 'package:bluerum/features/feed/data/feed_view_settings.dart';
 import 'package:bluerum/shared/models/post.dart';
 import 'package:bluerum/shared/widgets/post_list/post_list_memory.dart';
 
@@ -19,6 +20,7 @@ class HomeFeedPostsSliver extends ConsumerWidget {
     super.key,
     required this.postIds,
     required this.memoryPolicy,
+    required this.viewMode,
     required this.indexMapFor,
     required this.findChildIndex,
     required this.onOpen,
@@ -29,6 +31,7 @@ class HomeFeedPostsSliver extends ConsumerWidget {
 
   final List<int> postIds;
   final PostListMemoryPolicy memoryPolicy;
+  final FeedViewMode viewMode;
   final FeedListIndexMap Function(List<int> postIds, bool showAds) indexMapFor;
   final int? Function(Key key) findChildIndex;
   final void Function(PostView pv) onOpen;
@@ -78,6 +81,7 @@ class HomeFeedPostsSliver extends ConsumerWidget {
             key: ValueKey(postId),
             postId: postId,
             memoryPolicy: memoryPolicy,
+            viewMode: viewMode,
             onOpen: onOpen,
             onUpvote: onUpvote,
             onDownvote: onDownvote,
@@ -101,10 +105,7 @@ class HomeFeedStatusSliver {
   static const Color textPrimary = Color(0xFF000000);
   static const Color textSecondary = Color(0xFF525252);
 
-  static Widget error({
-    required String error,
-    required VoidCallback onRetry,
-  }) {
+  static Widget error({required String error, required VoidCallback onRetry}) {
     return SliverFillRemaining(
       child: Center(
         child: Padding(

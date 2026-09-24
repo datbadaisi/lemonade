@@ -19,6 +19,7 @@ class PostStillImage extends StatefulWidget {
     required this.altText,
     this.fit = BoxFit.cover,
     this.listDecode = false,
+    this.memCacheWidth,
     this.allowProgressiveFullRes = true,
     this.placeholderColor = const Color(0xFFE8E8E8),
   });
@@ -33,6 +34,7 @@ class PostStillImage extends StatefulWidget {
 
   /// Feed / list: LayoutBuilder → ScrollStable, solid gray placeholder.
   final bool listDecode;
+  final int? memCacheWidth;
 
   /// Progressive dual-layer full-res (detail only; off on feed).
   final bool allowProgressiveFullRes;
@@ -108,7 +110,11 @@ class _PostStillImageState extends State<PostStillImage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(MingCuteIcons.mgc_pic_2_line, size: 32, color: _textSecondary),
+              Icon(
+                MingCuteIcons.mgc_pic_2_line,
+                size: 32,
+                color: _textSecondary,
+              ),
               SizedBox(height: 8),
               Text(
                 'Tap to retry',
@@ -132,8 +138,10 @@ class _PostStillImageState extends State<PostStillImage> {
   @override
   Widget build(BuildContext context) {
     final activeUrl = _activeUrl;
-    final cacheWidth = inPageMediaMemCacheWidth(context);
-    final hasFullRes = widget.allowProgressiveFullRes &&
+    final cacheWidth =
+        widget.memCacheWidth ?? inPageMediaMemCacheWidth(context);
+    final hasFullRes =
+        widget.allowProgressiveFullRes &&
         widget.fullResUrl != null &&
         widget.fullResUrl != activeUrl &&
         widget.fullResUrl!.isNotEmpty;
@@ -195,8 +203,9 @@ class _PostStillImageState extends State<PostStillImage> {
             fit: widget.fit,
             memCacheWidth: cacheWidth,
             errorWidget: (_) {
-              WidgetsBinding.instance
-                  .addPostFrameCallback((_) => _onLoadError());
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) => _onLoadError(),
+              );
               if (_hasUsableFallback) {
                 return const ShimmerPlaceholder.fill();
               }

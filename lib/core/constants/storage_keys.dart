@@ -15,4 +15,7 @@ abstract final class StorageKeys {
 
   /// `'0'` disables ads app-wide; absent / other = enabled.
   static const adsEnabled = 'bluerum_ads_enabled';
+
+  /// Home feed layout: compact, normal, or large (the default).
+  static const feedViewMode = 'bluerum_feed_view_mode';
 }

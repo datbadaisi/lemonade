@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluerum/features/ads/data/ads_settings.dart';
 import 'package:bluerum/features/ads/domain/ads_config.dart';
 import 'package:bluerum/features/ads/domain/ads_placement.dart';
+import 'package:bluerum/features/feed/data/feed_view_settings.dart';
 import 'package:bluerum/shared/widgets/post_list/post_list_idle_precache.dart';
 import 'package:bluerum/shared/widgets/post_list/post_list_memory.dart';
 
@@ -134,6 +135,7 @@ final class HomeFeedPagination {
 
     final pos = scrollController.position;
     final showAds = ref.read(adsSettingsProvider).showAds;
+    final viewMode = ref.read(feedViewSettingsProvider);
     final itemCount = feedItemCount(
       postCount: feed.postIds.length,
       postsPerAd: AdsConfig.homePostsPerAd,
@@ -143,16 +145,20 @@ final class HomeFeedPagination {
 
     var avgH = memoryPolicy.averageHeight(fallback: 0);
     if (avgH <= 0) {
-      avgH = 360.0;
-      var samples = 0;
-      for (final id in feed.postIds.take(8)) {
-        final vm = ref.read(postCardVmProvider(id));
-        if (vm != null) {
-          avgH += vm.estimatedHeight;
-          samples++;
+      if (viewMode != FeedViewMode.large) {
+        avgH = viewMode == FeedViewMode.compact ? 96.0 : 128.0;
+      } else {
+        avgH = 360.0;
+        var samples = 0;
+        for (final id in feed.postIds.take(8)) {
+          final vm = ref.read(postCardVmProvider(id));
+          if (vm != null) {
+            avgH += vm.estimatedHeight;
+            samples++;
+          }
         }
+        if (samples > 0) avgH = avgH / (samples + 1);
       }
-      if (samples > 0) avgH = avgH / (samples + 1);
     }
 
     idlePrecache.preloadStillUrls(
@@ -178,7 +184,13 @@ final class HomeFeedPagination {
         final vm = ref.read(postCardVmProvider(id));
         if (vm == null || !vm.hasMedia) return null;
         final first = vm.firstMedia!;
-        if (first.isImage) return first.url;
+        if (first.isImage) {
+          if (viewMode != FeedViewMode.large &&
+              first.thumbnailUrl?.isNotEmpty == true) {
+            return first.thumbnailUrl;
+          }
+          return first.url;
+        }
         final thumb = first.thumbnailUrl;
         return (thumb != null && thumb.isNotEmpty) ? thumb : null;
       },

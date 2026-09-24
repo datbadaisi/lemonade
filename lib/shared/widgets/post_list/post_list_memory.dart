@@ -138,11 +138,13 @@ class PostListHeightProbe extends StatefulWidget {
     required this.postId,
     required this.policy,
     required this.child,
+    this.layoutKey,
   });
 
   final int postId;
   final PostListMemoryPolicy policy;
   final Widget child;
+  final Object? layoutKey;
 
   @override
   State<PostListHeightProbe> createState() => _PostListHeightProbeState();
@@ -154,7 +156,10 @@ class _PostListHeightProbeState extends State<PostListHeightProbe> {
   @override
   void didUpdateWidget(covariant PostListHeightProbe oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.postId != widget.postId) _measured = false;
+    if (oldWidget.postId != widget.postId ||
+        oldWidget.layoutKey != widget.layoutKey) {
+      _measured = false;
+    }
   }
 
   @override

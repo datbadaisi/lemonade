@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bluerum/features/feed/presentation/feed_controller.dart';
+import 'package:bluerum/features/feed/data/feed_view_settings.dart';
 import 'package:bluerum/features/feed/presentation/feed_list_memory.dart';
+import 'package:bluerum/features/feed/presentation/home_feed_post_row.dart';
 import 'package:bluerum/features/feed/presentation/post_card_vm.dart';
 import 'package:bluerum/features/feed/presentation/post_interaction_providers.dart';
 import 'package:bluerum/shared/models/post.dart';
 import 'package:bluerum/shared/widgets/post/post_card.dart';
 import 'package:bluerum/shared/widgets/post_list/post_list_memory.dart';
+import 'package:bluerum/features/post/data/post_repository_impl.dart';
 
 /// Home-feed row: full [PostCard] chrome, **no off-screen keep-alive**.
 ///
@@ -18,6 +21,7 @@ class HomeFeedTile extends ConsumerWidget {
     super.key,
     required this.postId,
     required this.memoryPolicy,
+    required this.viewMode,
     required this.onOpen,
     required this.onUpvote,
     required this.onDownvote,
@@ -26,6 +30,7 @@ class HomeFeedTile extends ConsumerWidget {
 
   final int postId;
   final FeedListMemoryPolicy memoryPolicy;
+  final FeedViewMode viewMode;
   final void Function(PostView pv) onOpen;
   final Future<bool> Function(PostView pv) onUpvote;
   final Future<bool> Function(PostView pv) onDownvote;
@@ -42,21 +47,42 @@ class HomeFeedTile extends ConsumerWidget {
     final savedOverlay = ref.watch(
       postSavedOverlaysProvider.select((m) => m[postId]),
     );
+    final isRead =
+        pv.read ||
+        ref.watch(
+          sessionReadPostIdsProvider.select((ids) => ids.contains(postId)),
+        );
 
     return PostListHeightProbe(
       postId: postId,
       policy: memoryPolicy,
-      child: PostCard(
-        postView: pv,
-        vm: vm,
-        feedOptimized: true,
-        effectiveVote: effectiveMyVote(pv, voteOverlay),
-        effectiveSaved: effectiveSaved(pv, savedOverlay),
-        onTap: () => onOpen(pv),
-        onUpvote: () => onUpvote(pv),
-        onDownvote: () => onDownvote(pv),
-        onSave: () => onSave(pv),
-      ),
+      layoutKey: viewMode,
+      child: viewMode == FeedViewMode.large
+          ? PostCard(
+              postView: pv,
+              vm: vm,
+              feedOptimized: true,
+              effectiveVote: effectiveMyVote(pv, voteOverlay),
+              effectiveSaved: effectiveSaved(pv, savedOverlay),
+              onTap: () => onOpen(pv),
+              onUpvote: () => onUpvote(pv),
+              onDownvote: () => onDownvote(pv),
+              onSave: () => onSave(pv),
+            )
+          : vm == null
+          ? const SizedBox.shrink()
+          : HomeFeedPostRow(
+              postView: pv,
+              vm: vm,
+              mode: viewMode,
+              isRead: isRead,
+              effectiveVote: effectiveMyVote(pv, voteOverlay),
+              effectiveSaved: effectiveSaved(pv, savedOverlay),
+              onOpen: () => onOpen(pv),
+              onUpvote: () => onUpvote(pv),
+              onDownvote: () => onDownvote(pv),
+              onSave: () => onSave(pv),
+            ),
     );
   }
 }

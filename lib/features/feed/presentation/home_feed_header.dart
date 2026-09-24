@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:ming_cute_icons/ming_cute_icons.dart';
 
 import 'package:bluerum/app/theme/app_colors.dart';
+import 'package:bluerum/features/feed/data/feed_view_settings.dart';
 import 'package:bluerum/features/shell/presentation/shell_chrome.dart';
+import 'package:bluerum/shared/widgets/filters/option_picker_bottom_sheet.dart';
 
 /// Sliding Home app bar title ("Lemonade") with feed-type color animation.
 class HomeFeedHeader extends StatelessWidget {
@@ -12,6 +15,8 @@ class HomeFeedHeader extends StatelessWidget {
     required this.titleScale,
     required this.titleColor,
     required this.onTitleTap,
+    required this.viewMode,
+    required this.onViewModeSelected,
   });
 
   final double topInset;
@@ -19,6 +24,8 @@ class HomeFeedHeader extends StatelessWidget {
   final Animation<double> titleScale;
   final Color titleColor;
   final VoidCallback onTitleTap;
+  final FeedViewMode viewMode;
+  final ValueChanged<FeedViewMode> onViewModeSelected;
 
   static const Color cardBg = Color(0xFFFFFFFF);
 
@@ -35,8 +42,10 @@ class HomeFeedHeader extends StatelessWidget {
           child: ListenableBuilder(
             listenable: ShellChrome.instance.hidePixels,
             builder: (context, child) {
-              final hide =
-                  ShellChrome.instance.hidePixels.value.clamp(0.0, headerHeight);
+              final hide = ShellChrome.instance.hidePixels.value.clamp(
+                0.0,
+                headerHeight,
+              );
               return IgnorePointer(
                 ignoring: hide >= headerHeight - 0.5,
                 child: Transform.translate(
@@ -50,33 +59,65 @@ class HomeFeedHeader extends StatelessWidget {
               elevation: 0,
               child: SizedBox(
                 height: headerHeight,
-                child: Center(
-                  child: GestureDetector(
-                    onTap: onTitleTap,
-                    behavior: HitTestBehavior.opaque,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: AnimatedBuilder(
-                        animation: titleAnimController,
-                        builder: (context, _) {
-                          return Transform.scale(
-                            scale: titleScale.value,
-                            child: Text(
-                              'Lemonade',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 20,
-                                color: titleColor,
-                              ),
-                            ),
-                          );
-                        },
+                child: Stack(
+                  children: [
+                    Center(
+                      child: GestureDetector(
+                        onTap: onTitleTap,
+                        behavior: HitTestBehavior.opaque,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          child: AnimatedBuilder(
+                            animation: titleAnimController,
+                            builder: (context, _) {
+                              return Transform.scale(
+                                scale: titleScale.value,
+                                child: Text(
+                                  'Lemonade',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 20,
+                                    color: titleColor,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    Positioned(
+                      right: 8,
+                      top: 0,
+                      bottom: 0,
+                      child: Center(
+                        child: IconButton(
+                          tooltip: 'Feed view: ${viewMode.label}',
+                          icon: const Icon(
+                            MingCuteIcons.mgc_layout_line,
+                            size: 24,
+                            color: AppColors.textPrimary,
+                          ),
+                          onPressed: () => showOptionPickerBottomSheet(
+                            context: context,
+                            title: 'Feed view',
+                            options: FeedViewMode.values
+                                .map((mode) => mode.label)
+                                .toList(),
+                            selected: viewMode.label,
+                            onSelected: (label) => onViewModeSelected(
+                              FeedViewMode.values.firstWhere(
+                                (mode) => mode.label == label,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

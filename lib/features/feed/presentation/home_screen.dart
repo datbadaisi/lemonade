@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluerum/app/providers.dart';
 import 'package:bluerum/features/ads/data/ads_settings.dart';
 import 'package:bluerum/features/ads/domain/ads_config.dart';
+import 'package:bluerum/features/feed/data/feed_view_settings.dart';
 import 'package:bluerum/features/auth/data/auth_repository.dart';
 import 'package:bluerum/features/post/presentation/post_detail_route.dart';
 import 'package:bluerum/features/post/presentation/post_detail_screen.dart';
@@ -26,6 +27,7 @@ import 'feed_list_index.dart';
 import 'feed_list_memory.dart';
 import 'feed_perf_log.dart';
 import 'feed_scroll_phase.dart';
+import 'feed_scroll_anchor.dart';
 import 'home_feed_header.dart';
 import 'home_feed_pagination.dart';
 import 'home_feed_posts_sliver.dart';
@@ -46,6 +48,7 @@ class HomeScreenState extends ConsumerState<HomeScreen>
   late String _activeInstanceUrl;
 
   final ScrollController _scrollController = ScrollController();
+  final GlobalKey _postsSliverKey = GlobalKey();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
@@ -128,13 +131,17 @@ class HomeScreenState extends ConsumerState<HomeScreen>
     );
     _titleScale = TweenSequence<double>([
       TweenSequenceItem(
-        tween: Tween<double>(begin: 1.0, end: 1.22)
-            .chain(CurveTween(curve: Curves.easeOutCubic)),
+        tween: Tween<double>(
+          begin: 1.0,
+          end: 1.22,
+        ).chain(CurveTween(curve: Curves.easeOutCubic)),
         weight: 55,
       ),
       TweenSequenceItem(
-        tween: Tween<double>(begin: 1.22, end: 1.0)
-            .chain(CurveTween(curve: Curves.easeInOutCubic)),
+        tween: Tween<double>(
+          begin: 1.22,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.easeInOutCubic)),
         weight: 45,
       ),
     ]).animate(_titleAnimController);
@@ -146,9 +153,9 @@ class HomeScreenState extends ConsumerState<HomeScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       unawaited(
-        ref.read(feedControllerProvider.notifier).bootstrap(
-              canUseSubscribed: _canUseSubscribed,
-            ),
+        ref
+            .read(feedControllerProvider.notifier)
+            .bootstrap(canUseSubscribed: _canUseSubscribed),
       );
       _snapTitleColor(ref.read(feedControllerProvider).type);
     });
@@ -261,6 +268,54 @@ class HomeScreenState extends ConsumerState<HomeScreen>
 
   void scrollToTop() => _viewport.scrollToTop();
 
+  void _selectViewMode(FeedViewMode mode) {
+    final current = ref.read(feedViewSettingsProvider);
+    if (current == mode) return;
+    final postIds = ref.read(feedControllerProvider).postIds;
+    final showAds = ref.read(adsSettingsProvider).showAds;
+    final visibleTop =
+        MediaQuery.paddingOf(context).top +
+        ShellChrome.chromeHeight -
+        ShellChrome.instance.hidePixels.value.clamp(
+          0.0,
+          ShellChrome.chromeHeight,
+        );
+    final anchor = captureFeedScrollAnchor(
+      sliverKey: _postsSliverKey,
+      postIds: postIds,
+      showAds: showAds,
+      visibleTop: visibleTop,
+      visibleBottom: MediaQuery.sizeOf(context).height,
+    );
+
+    _memoryPolicy.clear();
+    _idlePrecache.clear();
+    unawaited(ref.read(feedViewSettingsProvider.notifier).setMode(mode));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      final position = _scrollController.position;
+      if (anchor != null) {
+        final targetOffset = offsetForFeedScrollAnchor(
+          sliverKey: _postsSliverKey,
+          anchor: anchor,
+          postIds: ref.read(feedControllerProvider).postIds,
+          showAds: ref.read(adsSettingsProvider).showAds,
+          currentOffset: position.pixels,
+        );
+        if (targetOffset != null &&
+            (targetOffset - position.pixels).abs() > 0.5) {
+          _scrollController.jumpTo(
+            targetOffset.clamp(
+              position.minScrollExtent,
+              position.maxScrollExtent,
+            ),
+          );
+        }
+      }
+      _pagination.scheduleDataBufferCheck(ref);
+    });
+  }
+
   Future<bool> _toggleUpvote(PostView pv) async {
     if (!mounted) return false;
     if (!requireLogin(context, _auth, message: 'Log in to vote')) return false;
@@ -293,7 +348,8 @@ class HomeScreenState extends ConsumerState<HomeScreen>
       'open_post',
       data: {
         'postId': id,
-        'hasThumb': (pv.post.thumbnailUrl ?? '').isNotEmpty ||
+        'hasThumb':
+            (pv.post.thumbnailUrl ?? '').isNotEmpty ||
             (pv.post.url ?? '').isNotEmpty,
       },
     );
@@ -354,19 +410,22 @@ class HomeScreenState extends ConsumerState<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    final viewMode = ref.watch(feedViewSettingsProvider);
     final topInset = MediaQuery.paddingOf(context).top;
     const headerHeight = ShellChrome.chromeHeight;
     final headerExtent = topInset + headerHeight;
 
-    final postIds =
-        ref.watch(feedControllerProvider.select((s) => s.postIds));
-    final isLoading =
-        ref.watch(feedControllerProvider.select((s) => s.isLoading));
+    final postIds = ref.watch(feedControllerProvider.select((s) => s.postIds));
+    final isLoading = ref.watch(
+      feedControllerProvider.select((s) => s.isLoading),
+    );
     final error = ref.watch(feedControllerProvider.select((s) => s.error));
-    final isLoadingMore =
-        ref.watch(feedControllerProvider.select((s) => s.isLoadingMore));
-    final loadMoreError =
-        ref.watch(feedControllerProvider.select((s) => s.loadMoreError));
+    final isLoadingMore = ref.watch(
+      feedControllerProvider.select((s) => s.isLoadingMore),
+    );
+    final loadMoreError = ref.watch(
+      feedControllerProvider.select((s) => s.loadMoreError),
+    );
 
     ref.listen(feedControllerProvider.select((s) => s.postIds.length), (
       prev,
@@ -374,10 +433,7 @@ class HomeScreenState extends ConsumerState<HomeScreen>
     ) {
       if (next > (prev ?? 0)) _pagination.scheduleDataBufferCheck(ref);
     });
-    ref.listen(feedControllerProvider.select((s) => s.loadEpoch), (
-      prev,
-      next,
-    ) {
+    ref.listen(feedControllerProvider.select((s) => s.loadEpoch), (prev, next) {
       if (prev != null && prev != next) {
         final fullReload = ref.read(feedControllerProvider).isLoading;
         if (fullReload) _memoryPolicy.clear();
@@ -441,7 +497,9 @@ class HomeScreenState extends ConsumerState<HomeScreen>
                       HomeFeedStatusSliver.empty()
                     else
                       HomeFeedPostsSliver(
+                        key: _postsSliverKey,
                         postIds: postIds,
+                        viewMode: viewMode,
                         memoryPolicy: _memoryPolicy,
                         indexMapFor: _indexMapFor,
                         findChildIndex: _findChildIndex,
@@ -480,6 +538,8 @@ class HomeScreenState extends ConsumerState<HomeScreen>
             ),
           ),
           HomeFeedHeader(
+            viewMode: viewMode,
+            onViewModeSelected: _selectViewMode,
             topInset: topInset,
             titleAnimController: _titleAnimController,
             titleScale: _titleScale,
