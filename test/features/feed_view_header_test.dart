@@ -22,6 +22,7 @@ void main() {
                 onTitleTap: () {},
                 viewMode: FeedViewMode.large,
                 onViewModeSelected: (mode) => selected = mode,
+                lifetimeOwned: false,
               ),
             ],
           ),

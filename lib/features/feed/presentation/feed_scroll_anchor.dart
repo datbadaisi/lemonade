@@ -1,9 +1,6 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:bluerum/features/ads/domain/ads_config.dart';
-import 'package:bluerum/features/ads/domain/ads_placement.dart';
-
 /// A visible post and its screen position before a feed layout changes.
 final class FeedScrollAnchor {
   const FeedScrollAnchor({
@@ -24,33 +21,15 @@ RenderSliverMultiBoxAdaptor? _feedSliver(GlobalKey key) {
   return renderObject is RenderSliverMultiBoxAdaptor ? renderObject : null;
 }
 
-int? _postIdAt({
-  required int listIndex,
-  required List<int> postIds,
-  required bool showAds,
-}) {
-  if (isFeedAdAt(
-    index: listIndex,
-    postCount: postIds.length,
-    postsPerAd: AdsConfig.homePostsPerAd,
-    showAds: showAds,
-  )) {
-    return null;
-  }
-  final postIndex = feedPostIndex(
-    listIndex: listIndex,
-    postsPerAd: AdsConfig.homePostsPerAd,
-    showAds: showAds,
-  );
-  if (postIndex < 0 || postIndex >= postIds.length) return null;
-  return postIds[postIndex];
+int? _postIdAt({required int listIndex, required List<int> postIds}) {
+  if (listIndex < 0 || listIndex >= postIds.length) return null;
+  return postIds[listIndex];
 }
 
 /// Read only the materialized sliver children; off-screen posts stay recycled.
 FeedScrollAnchor? captureFeedScrollAnchor({
   required GlobalKey sliverKey,
   required List<int> postIds,
-  required bool showAds,
   required double visibleTop,
   required double visibleBottom,
 }) {
@@ -62,7 +41,6 @@ FeedScrollAnchor? captureFeedScrollAnchor({
     final postId = _postIdAt(
       listIndex: sliver.indexOf(child),
       postIds: postIds,
-      showAds: showAds,
     );
     if (postId == null) return;
     final top = child.localToGlobal(Offset.zero).dy;
@@ -84,7 +62,6 @@ double? offsetForFeedScrollAnchor({
   required GlobalKey sliverKey,
   required FeedScrollAnchor anchor,
   required List<int> postIds,
-  required bool showAds,
   required double currentOffset,
 }) {
   final sliver = _feedSliver(sliverKey);
@@ -96,7 +73,6 @@ double? offsetForFeedScrollAnchor({
     final postId = _postIdAt(
       listIndex: sliver.indexOf(child),
       postIds: postIds,
-      showAds: showAds,
     );
     if (postId == anchor.postId) {
       newTop = child.localToGlobal(Offset.zero).dy;

@@ -9,7 +9,7 @@ enum FeedScrollPhase { idle, dragging, flinging }
 /// Process-wide phase for **Home** feed only.
 ///
 /// [HomeScreen] is the sole writer (via [FeedScrollPhaseController]). In-feed
-/// ads default to this listenable. Secondary surfaces pass their **own**
+/// Feed widgets use this listenable. Secondary surfaces pass their **own**
 /// [ValueNotifier] into [FeedScrollPhaseController] — never this global.
 ///
 /// **Not** a Riverpod provider — cards must not mass-rebuild on phase flips.

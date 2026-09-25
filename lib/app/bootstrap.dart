@@ -7,9 +7,7 @@ import 'package:bluerum/app/providers.dart';
 import 'package:bluerum/core/network/http_overrides.dart';
 import 'package:bluerum/core/network/lemmy_api_client.dart';
 import 'package:bluerum/core/storage/shared_prefs_store.dart';
-import 'package:bluerum/features/ads/ads_bootstrap.dart';
 import 'package:bluerum/features/auth/data/auth_repository.dart';
-import 'package:bluerum/features/subscription/data/subscription_providers.dart';
 
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,19 +34,6 @@ Future<void> bootstrap() async {
   runApp(
     UncontrolledProviderScope(container: container, child: const BluerumApp()),
   );
-
-  // Defer Mobile Ads + in-app purchases until after the first two frames so cold
-  // start does not race WebView/Dynamite/Billing against first paint
-  // (profile: Choreographer "Skipped ~30 frames" on A16 when both ran
-  // before runApp returned). InFeedNativeAd awaits [initializeMobileAds].
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // ignore: unawaited_futures
-      initializeMobileAds();
-      // ignore: unawaited_futures
-      container.read(lifetimePurchaseBootstrapProvider.future);
-    });
-  });
 
   // After the first frame, refresh canonical person name/id if already logged in
   // (fixes older sessions that stored email as username).

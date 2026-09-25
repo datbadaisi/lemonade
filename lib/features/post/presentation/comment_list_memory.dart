@@ -10,7 +10,7 @@ import 'package:flutter/widgets.dart';
 /// 1. **Keep recently visited comment Element trees** (budgeted LRU) so reverse
 ///    fling does not re-inflate author/action chrome + re-probe images.
 /// 2. **Prefer keeping media rows** when the budget is full.
-/// 3. **Never keep ads** in this registry (platform views are managed separately).
+/// 3. Keep only comment and header elements in this registry.
 /// 4. **Remember row heights** for better jump/precache estimates.
 /// 5. **Boost ImageCache** while detail is open (pixels are shared; this is the
 ///    cheapest reverse-scroll win after keep-alive).
@@ -21,7 +21,7 @@ final class CommentListMemoryPolicy {
   /// Default 72: balanced reverse-fling vs RAM (was 96 — Wave 6 dial).
   CommentListMemoryPolicy({this.maxKeptRows = 72, this.maxMeasuredRows = 400});
 
-  /// Live comment Element trees we try to retain (not ads, not header).
+  /// Live comment Element trees we try to retain (not the header).
   final int maxKeptRows;
 
   /// Height samples are useful for jump/anchor estimates, not an unbounded
@@ -62,7 +62,7 @@ final class CommentListMemoryPolicy {
   }
 
   /// Estimated scroll offset for a flat **row** index (post-header excluded).
-  /// Prefer [estimateListOffsetForIndex] when ads are interleaved.
+  /// Prefer [estimateListOffsetForIndex] for flattened comment lists.
   double estimateOffsetForRow(int rowIndex, {double headerEstimate = 280}) {
     if (rowIndex <= 0) return headerEstimate;
     final avg = averageHeight();

@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
-import 'package:bluerum/features/ads/data/ads_settings.dart';
-import 'package:bluerum/features/ads/domain/ads_config.dart';
-import 'package:bluerum/features/ads/domain/ads_placement.dart';
-import 'package:bluerum/features/ads/presentation/in_feed_native_ad.dart';
 import 'package:bluerum/features/feed/data/feed_view_settings.dart';
 import 'package:bluerum/shared/models/post.dart';
 import 'package:bluerum/shared/widgets/post_list/post_list_memory.dart';
@@ -13,9 +8,9 @@ import 'package:bluerum/shared/widgets/post_list/post_list_memory.dart';
 import 'feed_list_index.dart';
 import 'home_feed_tile.dart';
 
-/// Posts + ads sliver — only rebuilds when [postIds] / ads setting change,
-/// not when load-more footer flags flip on the parent [HomeScreen].
-class HomeFeedPostsSliver extends ConsumerWidget {
+/// Posts sliver — only rebuilds when [postIds] change, not when load-more
+/// footer flags flip on the parent [HomeScreen].
+class HomeFeedPostsSliver extends StatelessWidget {
   const HomeFeedPostsSliver({
     super.key,
     required this.postIds,
@@ -32,7 +27,7 @@ class HomeFeedPostsSliver extends ConsumerWidget {
   final List<int> postIds;
   final PostListMemoryPolicy memoryPolicy;
   final FeedViewMode viewMode;
-  final FeedListIndexMap Function(List<int> postIds, bool showAds) indexMapFor;
+  final FeedListIndexMap Function(List<int> postIds) indexMapFor;
   final int? Function(Key key) findChildIndex;
   final void Function(PostView pv) onOpen;
   final Future<bool> Function(PostView pv) onUpvote;
@@ -40,43 +35,12 @@ class HomeFeedPostsSliver extends ConsumerWidget {
   final Future<bool> Function(PostView pv) onSave;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final showAds = ref.watch(adsSettingsProvider).showAds;
-    final postCount = postIds.length;
-    final itemCount = feedItemCount(
-      postCount: postCount,
-      postsPerAd: AdsConfig.homePostsPerAd,
-      showAds: showAds,
-    );
-    // Warm O(1) findChildIndex map for recycle.
-    indexMapFor(postIds, showAds);
-
+  Widget build(BuildContext context) {
+    indexMapFor(postIds);
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
-          if (isFeedAdAt(
-            index: index,
-            postCount: postCount,
-            postsPerAd: AdsConfig.homePostsPerAd,
-            showAds: showAds,
-          )) {
-            final slot = (index + 1) ~/ (AdsConfig.homePostsPerAd + 1) - 1;
-            return RepaintBoundary(
-              child: InFeedNativeAd(
-                key: ValueKey('home-ad-slot-$slot'),
-                placement: InFeedAdPlacement.homeFeed,
-                slot: slot,
-                deferUntilNearViewport: true,
-                keepHeightOnFailure: true,
-              ),
-            );
-          }
-          final postIndex = feedPostIndex(
-            listIndex: index,
-            postsPerAd: AdsConfig.homePostsPerAd,
-            showAds: showAds,
-          );
-          final postId = postIds[postIndex];
+          final postId = postIds[index];
           return HomeFeedTile(
             key: ValueKey(postId),
             postId: postId,
@@ -88,7 +52,7 @@ class HomeFeedPostsSliver extends ConsumerWidget {
             onSave: onSave,
           );
         },
-        childCount: itemCount,
+        childCount: postIds.length,
         findChildIndexCallback: findChildIndex,
         // Commercial virtualization: destroy off-screen Element trees.
         addAutomaticKeepAlives: false,

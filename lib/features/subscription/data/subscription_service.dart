@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 import 'package:bluerum/features/subscription/domain/lifetime_purchase_config.dart';
-import 'package:bluerum/features/subscription/domain/remove_ads_offering.dart';
-import 'package:bluerum/features/subscription/domain/remove_ads_snapshot.dart';
+import 'package:bluerum/features/subscription/domain/lifetime_purchase_offering.dart';
+import 'package:bluerum/features/subscription/domain/lifetime_purchase_snapshot.dart';
 
 enum LifetimePurchaseActionResult {
   started,
@@ -31,7 +31,7 @@ final class LifetimePurchaseEvent {
   });
 
   final LifetimePurchaseEventType type;
-  final RemoveAdsSnapshot? snapshot;
+  final LifetimePurchaseSnapshot? snapshot;
   final String? message;
 }
 
@@ -117,9 +117,9 @@ class LifetimePurchaseService {
     }
   }
 
-  Future<RemoveAdsOffering> loadOffering() async {
+  Future<LifetimePurchaseOffering> loadOffering() async {
     await initialize();
-    return RemoveAdsOffering(lifetime: _lifetimeProduct);
+    return LifetimePurchaseOffering(lifetime: _lifetimeProduct);
   }
 
   /// Starts the native purchase UI. The final result arrives on [events].
@@ -180,7 +180,7 @@ class LifetimePurchaseService {
             );
           case PurchaseStatus.purchased:
           case PurchaseStatus.restored:
-            final snapshot = RemoveAdsSnapshot.fromPurchase(purchase);
+            final snapshot = LifetimePurchaseSnapshot.fromPurchase(purchase);
             if (snapshot.entitled) {
               if (_restoreInFlight &&
                   purchase.status == PurchaseStatus.restored) {
@@ -233,11 +233,11 @@ class LifetimePurchaseService {
         LifetimePurchaseEvent(
           type: LifetimePurchaseEventType.restoreCompleted,
           snapshot: restoredLifetime
-              ? const RemoveAdsSnapshot(
+              ? const LifetimePurchaseSnapshot(
                   entitled: true,
                   productId: LifetimePurchaseConfig.productId,
                 )
-              : RemoveAdsSnapshot.empty,
+              : LifetimePurchaseSnapshot.empty,
         ),
       );
     }

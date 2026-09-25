@@ -14,9 +14,6 @@ import 'package:bluerum/app/theme/app_bar_chrome.dart';
 import 'package:bluerum/app/theme/app_colors.dart';
 import 'package:bluerum/core/utils/error_utils.dart';
 import 'package:bluerum/core/utils/media_utils.dart';
-import 'package:bluerum/features/ads/data/ads_settings.dart';
-import 'package:bluerum/features/ads/domain/ads_placement.dart';
-import 'package:bluerum/features/ads/presentation/in_feed_native_ad.dart';
 import 'package:bluerum/features/auth/data/auth_repository.dart';
 import 'package:bluerum/features/comment/data/comment_repository_impl.dart';
 import 'package:bluerum/features/comment/presentation/comment_compose_screen.dart';
@@ -174,7 +171,8 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     final displayUrl = firstMedia.type == MediaType.image
         ? firstMedia.url
         : firstMedia.thumbnailUrl;
-    final cached = cachedMediaAspect(displayUrl) ??
+    final cached =
+        cachedMediaAspect(displayUrl) ??
         cachedMediaAspect(firstMedia.url) ??
         cachedMediaAspect(firstMedia.thumbnailUrl);
     if (cached != null) {
@@ -743,13 +741,10 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
 
   Future<void> _refresh() async {
     HapticFeedback.mediumImpact();
-    await runWithMediaBudgetRecovery(
-      () async {
-        _prefetchedMediaUrls.clear();
-        await _loadPage(1, keepExisting: _commentMap.isNotEmpty);
-      },
-      isMounted: () => mounted,
-    );
+    await runWithMediaBudgetRecovery(() async {
+      _prefetchedMediaUrls.clear();
+      await _loadPage(1, keepExisting: _commentMap.isNotEmpty);
+    }, isMounted: () => mounted);
   }
 
   void _loadMore() {
@@ -789,11 +784,8 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
       }
 
       final pos = _scrollCtrl.position;
-      final showAds =
-          ref.read(adsSettingsProvider).showAds && widget.threadRoot == null;
-      final body = _thread.bodyEntries(showAds: showAds);
-      final displayIdx = _thread.displayIndexForRow(rowIdx, showAds: showAds) ??
-          rowIdx;
+      final body = _thread.bodyEntries();
+      final displayIdx = _thread.displayIndexForRow(rowIdx) ?? rowIdx;
       final listIndex = displayIdx + 1;
       final contentW = MediaQuery.sizeOf(context).width - 32;
       final maxMediaH = MediaQuery.sizeOf(context).height * 0.55;
@@ -985,10 +977,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     if (id == null) return null;
     final rowIdx = _rowIndexById[id];
     if (rowIdx == null) return null;
-    final showAds =
-        ref.read(adsSettingsProvider).showAds && widget.threadRoot == null;
-    if (!showAds) return rowIdx;
-    return _thread.displayIndexForRow(rowIdx, showAds: true);
+    return rowIdx;
   }
 
   // ── Vote / save ───────────────────────────────────────────────────────────
@@ -1157,11 +1146,10 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     }
   }
 
-  bool get _isMyPost =>
-      _authService.isMe(
-        personId: _postView.creator.id,
-        username: _postView.creator.name,
-      );
+  bool get _isMyPost => _authService.isMe(
+    personId: _postView.creator.id,
+    username: _postView.creator.name,
+  );
 
   bool _isMyComment(CommentView cv) =>
       _authService.isMe(personId: cv.creator.id, username: cv.creator.name);
@@ -1269,10 +1257,9 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     );
     if (!confirm) return;
     try {
-      final updated = await ref.read(commentRepositoryProvider).delete(
-            commentId: commentView.comment.id,
-            deleted: !isDeleted,
-          );
+      final updated = await ref
+          .read(commentRepositoryProvider)
+          .delete(commentId: commentView.comment.id, deleted: !isDeleted);
       if (mounted) {
         _thread.upsertComment(updated);
         _showSnack(isDeleted ? 'Comment restored' : 'Comment deleted');
@@ -1302,10 +1289,9 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
       return;
     }
     try {
-      await ref.read(commentRepositoryProvider).report(
-            commentId: commentView.comment.id,
-            reason: reason,
-          );
+      await ref
+          .read(commentRepositoryProvider)
+          .report(commentId: commentView.comment.id, reason: reason);
       _showSnack('Comment reported successfully');
     } catch (e) {
       _showSnack('Failed to report comment: ${formatError(e)}');
@@ -1326,10 +1312,9 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     );
     if (!confirm) return;
     try {
-      await ref.read(commentRepositoryProvider).blockPerson(
-            personId: creator.id,
-            block: true,
-          );
+      await ref
+          .read(commentRepositoryProvider)
+          .blockPerson(personId: creator.id, block: true);
       _showSnack('Blocked u/${creator.name}');
       _loadPage(1);
     } catch (e) {
@@ -1508,7 +1493,6 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final isThreadView = widget.threadRoot != null;
-    final showAds = ref.watch(adsSettingsProvider.select((s) => s.showAds));
     final thread = ref.watch(commentThreadControllerProvider(_threadScope));
     return Scaffold(
       backgroundColor: Colors.white,
@@ -1527,9 +1511,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                   SliverToBoxAdapter(
                     child: HeaderKeepAlive(
                       policy: _memory,
-                      child: RepaintBoundary(
-                        child: _buildPostHeader(),
-                      ),
+                      child: RepaintBoundary(child: _buildPostHeader()),
                     ),
                   ),
                   if (_isLoading)
@@ -1544,10 +1526,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                     ListenableBuilder(
                       listenable: thread,
                       builder: (context, _) {
-                        final effectiveShow =
-                            showAds && widget.threadRoot == null;
-                        final body =
-                            thread.bodyEntries(showAds: effectiveShow);
+                        final body = thread.bodyEntries();
                         final bottomPad =
                             MediaQuery.of(context).padding.bottom + 64;
                         return SliverPadding(
@@ -1567,22 +1546,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                                   return const CommentEndMarker();
                                 }
                                 final entry = body[index];
-                                if (entry.isAd) {
-                                  return RepaintBoundary(
-                                    child: InFeedNativeAd(
-                                      key: ValueKey(
-                                        'comment-ad-slot-${entry.adSlot}',
-                                      ),
-                                      placement: InFeedAdPlacement.commentList,
-                                      slot: entry.adSlot!,
-                                      deferUntilNearViewport: true,
-                                      scrollPhaseListenable: _detailScrollPhase,
-                                      keepHeightOnFailure: true,
-                                      farDisposeWhenOffscreen: true,
-                                    ),
-                                  );
-                                }
-                                final row = _rows[entry.rowIndex!];
+                                final row = _rows[entry.rowIndex];
                                 final bodyVm = _thread.bodyVmFor(row.cv);
                                 return KeyedSubtree(
                                   key: _keyFor(row.cv.comment.id),

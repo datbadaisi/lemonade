@@ -7,7 +7,7 @@ abstract final class AppRoutes {
   static const createPost = '/create-post';
   static const composeComment = '/compose-comment';
   static const settings = '/settings';
-  static const removeAds = '/settings/remove-ads';
+  static const lifetime = '/settings/lifetime';
   static const saved = '/saved';
   static const blocks = '/settings/blocks';
   static const chatPath = '/chat/:personId';

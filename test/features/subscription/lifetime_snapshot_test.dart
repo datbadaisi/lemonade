@@ -1,4 +1,4 @@
-import 'package:bluerum/features/subscription/domain/remove_ads_snapshot.dart';
+import 'package:bluerum/features/subscription/domain/lifetime_purchase_snapshot.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
@@ -20,9 +20,9 @@ PurchaseDetails _purchase({
 }
 
 void main() {
-  group('RemoveAdsSnapshot.fromPurchase', () {
+  group('LifetimePurchaseSnapshot.fromPurchase', () {
     test('accepts a purchased lifetime product', () {
-      final snapshot = RemoveAdsSnapshot.fromPurchase(
+      final snapshot = LifetimePurchaseSnapshot.fromPurchase(
         _purchase(
           productId: 'remove_ads_lifetime',
           status: PurchaseStatus.purchased,
@@ -34,7 +34,7 @@ void main() {
     });
 
     test('accepts a restored lifetime product', () {
-      final snapshot = RemoveAdsSnapshot.fromPurchase(
+      final snapshot = LifetimePurchaseSnapshot.fromPurchase(
         _purchase(
           productId: 'remove_ads_lifetime',
           status: PurchaseStatus.restored,
@@ -52,14 +52,14 @@ void main() {
           status: PurchaseStatus.pending,
         ),
       ]) {
-        final snapshot = RemoveAdsSnapshot.fromPurchase(purchase);
+        final snapshot = LifetimePurchaseSnapshot.fromPurchase(purchase);
         expect(snapshot.entitled, isFalse);
         expect(snapshot.productId, isNull);
       }
     });
 
     test('rejects a lifetime update without store verification payload', () {
-      final snapshot = RemoveAdsSnapshot.fromPurchase(
+      final snapshot = LifetimePurchaseSnapshot.fromPurchase(
         _purchase(
           productId: 'remove_ads_lifetime',
           status: PurchaseStatus.purchased,

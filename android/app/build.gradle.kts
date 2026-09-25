@@ -24,8 +24,6 @@ val releaseKeystorePath = releaseProp("BLUERUM_KEYSTORE_PATH", "storeFile")
 val releaseKeystorePassword = releaseProp("BLUERUM_KEYSTORE_PASSWORD", "storePassword")
 val releaseKeyAlias = releaseProp("BLUERUM_KEY_ALIAS", "keyAlias")
 val releaseKeyPassword = releaseProp("BLUERUM_KEY_PASSWORD", "keyPassword")
-val defaultAdmobAppId = "ca-app-pub-3940256099942544~3347511713"
-val admobAppId = releaseProp("BLUERUM_ADMOB_ANDROID_APP_ID", "admobAppId") ?: defaultAdmobAppId
 val hasReleaseSigning = listOf(
     releaseKeystorePath,
     releaseKeystorePassword,
@@ -51,7 +49,6 @@ extensions.configure<ApplicationExtension> {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        manifestPlaceholders["admobAppId"] = admobAppId
     }
 
     signingConfigs {

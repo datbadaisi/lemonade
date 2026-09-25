@@ -17,6 +17,7 @@ class HomeFeedHeader extends StatelessWidget {
     required this.onTitleTap,
     required this.viewMode,
     required this.onViewModeSelected,
+    required this.lifetimeOwned,
   });
 
   final double topInset;
@@ -26,6 +27,7 @@ class HomeFeedHeader extends StatelessWidget {
   final VoidCallback onTitleTap;
   final FeedViewMode viewMode;
   final ValueChanged<FeedViewMode> onViewModeSelected;
+  final bool lifetimeOwned;
 
   static const Color cardBg = Color(0xFFFFFFFF);
 
@@ -61,6 +63,22 @@ class HomeFeedHeader extends StatelessWidget {
                 height: headerHeight,
                 child: Stack(
                   children: [
+                    if (lifetimeOwned)
+                      const Positioned(
+                        left: 12,
+                        top: 0,
+                        bottom: 0,
+                        child: Center(
+                          child: Image(
+                            image: AssetImage(
+                              'assets/stickers/lifetime_lemonade.png',
+                            ),
+                            width: 34,
+                            height: 34,
+                            semanticLabel: 'Lifetime supporter',
+                          ),
+                        ),
+                      ),
                     Center(
                       child: GestureDetector(
                         onTap: onTitleTap,

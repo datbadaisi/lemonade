@@ -2,10 +2,9 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:bluerum/features/ads/data/ads_settings.dart';
 import 'package:bluerum/features/subscription/data/subscription_service.dart';
-import 'package:bluerum/features/subscription/domain/remove_ads_offering.dart';
-import 'package:bluerum/features/subscription/domain/remove_ads_snapshot.dart';
+import 'package:bluerum/features/subscription/domain/lifetime_purchase_offering.dart';
+import 'package:bluerum/features/subscription/domain/lifetime_purchase_snapshot.dart';
 
 final lifetimePurchaseServiceProvider = Provider<LifetimePurchaseService>((
   ref,
@@ -15,16 +14,15 @@ final lifetimePurchaseServiceProvider = Provider<LifetimePurchaseService>((
   return service;
 });
 
-/// Store-backed remove-ads state. The local ads flag remains only as a cache
-/// before the first store update arrives.
-final class RemoveAdsEntitlement {
-  const RemoveAdsEntitlement({
+/// Store-backed lifetime purchase state.
+final class LifetimeEntitlement {
+  const LifetimeEntitlement({
     required this.entitled,
     this.productId,
     this.storeSynced = false,
   });
 
-  static const initial = RemoveAdsEntitlement(entitled: false);
+  static const initial = LifetimeEntitlement(entitled: false);
 
   final bool entitled;
   final String? productId;
@@ -33,32 +31,29 @@ final class RemoveAdsEntitlement {
   bool get lifetimeOwned => entitled;
 }
 
-class RemoveAdsEntitlementNotifier extends Notifier<RemoveAdsEntitlement> {
+class LifetimeEntitlementNotifier extends Notifier<LifetimeEntitlement> {
   @override
-  RemoveAdsEntitlement build() => RemoveAdsEntitlement.initial;
+  LifetimeEntitlement build() => LifetimeEntitlement.initial;
 
-  void applySnapshot(RemoveAdsSnapshot snapshot) {
-    state = RemoveAdsEntitlement(
+  void applySnapshot(LifetimePurchaseSnapshot snapshot) {
+    state = LifetimeEntitlement(
       entitled: snapshot.entitled,
       productId: snapshot.entitled ? snapshot.productId : null,
       storeSynced: true,
     );
   }
 
-  Future<void> applyPurchaseSnapshot(RemoveAdsSnapshot snapshot) async {
+  void applyPurchaseSnapshot(LifetimePurchaseSnapshot snapshot) {
     applySnapshot(snapshot);
-    await ref
-        .read(adsSettingsProvider.notifier)
-        .setAdsRemoved(snapshot.entitled);
   }
 }
 
-final removeAdsEntitlementProvider =
-    NotifierProvider<RemoveAdsEntitlementNotifier, RemoveAdsEntitlement>(
-      RemoveAdsEntitlementNotifier.new,
+final lifetimeEntitlementProvider =
+    NotifierProvider<LifetimeEntitlementNotifier, LifetimeEntitlement>(
+      LifetimeEntitlementNotifier.new,
     );
 
-/// Initializes the store listener and mirrors lifetime purchases into ads.
+/// Initializes the store listener and restores the lifetime entitlement.
 final lifetimePurchaseBootstrapProvider = FutureProvider<void>((ref) async {
   final service = ref.read(lifetimePurchaseServiceProvider);
   await service.initialize();
@@ -73,7 +68,7 @@ final lifetimePurchaseBootstrapProvider = FutureProvider<void>((ref) async {
 
     // ignore: discarded_futures
     ref
-        .read(removeAdsEntitlementProvider.notifier)
+        .read(lifetimeEntitlementProvider.notifier)
         .applyPurchaseSnapshot(snapshot);
   });
   ref.onDispose(eventSubscription.cancel);
@@ -83,9 +78,8 @@ final lifetimePurchaseBootstrapProvider = FutureProvider<void>((ref) async {
   unawaited(service.restorePurchases());
 });
 
-final removeAdsOfferingProvider = FutureProvider<RemoveAdsOffering>((
-  ref,
-) async {
-  await ref.watch(lifetimePurchaseBootstrapProvider.future);
-  return ref.read(lifetimePurchaseServiceProvider).loadOffering();
-});
+final lifetimePurchaseOfferingProvider =
+    FutureProvider<LifetimePurchaseOffering>((ref) async {
+      await ref.watch(lifetimePurchaseBootstrapProvider.future);
+      return ref.read(lifetimePurchaseServiceProvider).loadOffering();
+    });

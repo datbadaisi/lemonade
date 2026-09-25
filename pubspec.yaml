@@ -53,7 +53,6 @@ dependencies:
   flutter_video_thumbnail_plus: ^1.0.6
   path_provider: ^2.1.5
   ming_cute_icons: ^0.0.8
-  google_mobile_ads: ^9.0.0
   in_app_purchase: ^3.3.1
 
 dev_dependencies:
@@ -82,6 +81,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/stickers/lifetime_lemonade.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

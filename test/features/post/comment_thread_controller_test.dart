@@ -32,28 +32,22 @@ void main() {
     c.dispose();
   });
 
-  test('bodyEntries caches by revision and showAds', () {
+  test('bodyEntries caches by revision', () {
     final c = CommentThreadController();
-    final a = c.bodyEntries(showAds: false);
-    final b = c.bodyEntries(showAds: false);
+    final a = c.bodyEntries();
+    final b = c.bodyEntries();
     expect(identical(a, b), isTrue);
     final revBefore = c.revision;
     c.rebuild(notify: false);
     expect(c.revision, greaterThan(revBefore));
     // Empty trees share const []; cache identity is verified via revision bump.
-    final adsOff = c.bodyEntries(showAds: false);
-    final adsOn = c.bodyEntries(showAds: true);
-    // showAds flip must recompute (even when both empty for no rows).
-    expect(c.revision, greaterThan(revBefore));
     // Force a structural change so display cache is rebuilt with a new list.
     c.collapsedIds.add(1);
     c.rebuild(notify: false);
-    final afterCollapse = c.bodyEntries(showAds: false);
+    final afterCollapse = c.bodyEntries();
     // Still empty rows → may still be const []; revision is the contract.
     expect(c.revision, greaterThan(revBefore));
     // silence unused
-    expect(adsOff, isA<List>());
-    expect(adsOn, isA<List>());
     expect(afterCollapse, isA<List>());
     c.dispose();
   });

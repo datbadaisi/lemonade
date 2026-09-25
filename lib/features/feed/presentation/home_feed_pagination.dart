@@ -4,9 +4,6 @@ import 'dart:math' as math;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:bluerum/features/ads/data/ads_settings.dart';
-import 'package:bluerum/features/ads/domain/ads_config.dart';
-import 'package:bluerum/features/ads/domain/ads_placement.dart';
 import 'package:bluerum/features/feed/data/feed_view_settings.dart';
 import 'package:bluerum/shared/widgets/post_list/post_list_idle_precache.dart';
 import 'package:bluerum/shared/widgets/post_list/post_list_memory.dart';
@@ -134,13 +131,8 @@ final class HomeFeedPagination {
     if (phaseListenable.value == FeedScrollPhase.flinging) return;
 
     final pos = scrollController.position;
-    final showAds = ref.read(adsSettingsProvider).showAds;
     final viewMode = ref.read(feedViewSettingsProvider);
-    final itemCount = feedItemCount(
-      postCount: feed.postIds.length,
-      postsPerAd: AdsConfig.homePostsPerAd,
-      showAds: showAds,
-    );
+    final itemCount = feed.postIds.length;
     if (itemCount == 0) return;
 
     var avgH = memoryPolicy.averageHeight(fallback: 0);
@@ -165,19 +157,7 @@ final class HomeFeedPagination {
       context: context,
       itemCount: itemCount,
       stillUrlAt: (listIndex) {
-        if (isFeedAdAt(
-          index: listIndex,
-          postCount: feed.postIds.length,
-          postsPerAd: AdsConfig.homePostsPerAd,
-          showAds: showAds,
-        )) {
-          return null;
-        }
-        final postIndex = feedPostIndex(
-          listIndex: listIndex,
-          postsPerAd: AdsConfig.homePostsPerAd,
-          showAds: showAds,
-        );
+        final postIndex = listIndex;
         if (postIndex < 0 || postIndex >= feed.postIds.length) return null;
         final id = feed.postIds[postIndex];
         if (postsById[id] == null) return null;

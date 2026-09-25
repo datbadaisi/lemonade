@@ -12,10 +12,8 @@ import 'package:bluerum/features/profile/presentation/saved_posts_screen.dart';
 import 'package:bluerum/features/settings/presentation/blocks_screen.dart';
 import 'package:bluerum/features/settings/presentation/edit_profile_screen.dart';
 import 'package:bluerum/features/settings/presentation/account_switcher_sheet.dart';
-import 'package:bluerum/features/settings/presentation/feedback_screen.dart';
 import 'package:bluerum/features/settings/presentation/tips_guide_screen.dart';
 import 'package:bluerum/features/community/presentation/subscribed_communities_screen.dart';
-import 'package:bluerum/features/ads/data/ads_settings.dart';
 import 'package:bluerum/shared/widgets/auth/login_required_scaffold.dart';
 import 'package:bluerum/app/theme/app_colors.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -24,7 +22,9 @@ const Color _textPrimary = Color(0xFF000000);
 const Color _textSecondary = Color(0xFF525252);
 
 const String _privacyPolicyUrl = String.fromEnvironment('PRIVACY_POLICY_URL');
-const String _termsOfServiceUrl = String.fromEnvironment('TERMS_OF_SERVICE_URL');
+const String _termsOfServiceUrl = String.fromEnvironment(
+  'TERMS_OF_SERVICE_URL',
+);
 
 class SettingsScreen extends ConsumerStatefulWidget {
   final int personId;
@@ -136,9 +136,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final trimmed = url.trim();
     if (trimmed.isEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('URL is not configured.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('URL is not configured.')));
       }
       return;
     }
@@ -146,9 +146,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (uri == null) return;
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open link')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Could not open link')));
     }
   }
 
@@ -185,7 +185,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text(
               'Log Out',
-              style: TextStyle(color: Color(0xFFE53935), fontWeight: FontWeight.w700, fontSize: 13),
+              style: TextStyle(
+                color: Color(0xFFE53935),
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
             ),
           ),
         ],
@@ -315,7 +319,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           // Subscribed
           ListTile(
-            leading: const Icon(MingCuteIcons.mgc_group_3_line, color: _textPrimary),
+            leading: const Icon(
+              MingCuteIcons.mgc_group_3_line,
+              color: _textPrimary,
+            ),
             title: const Text(
               'Subscribed',
               style: TextStyle(
@@ -411,14 +418,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               );
             },
           ),
-          // Feedback — compose in-app, submit to Google Form
           ListTile(
-            leading: const Icon(
-              MingCuteIcons.mgc_mail_send_line,
-              color: _textPrimary,
-            ),
+            leading: const Icon(Icons.local_cafe_outlined, color: _textPrimary),
             title: const Text(
-              'Feedback',
+              'Lifetime supporter',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
@@ -430,66 +433,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               size: 16,
               color: _textSecondary,
             ),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const FeedbackScreen()),
-              );
-            },
-          ),
-          // Ads — purchase flag (IAP later) + status
-          Builder(
-            builder: (context) {
-              final ads = ref.watch(adsSettingsProvider);
-              final adsCtrl = ref.read(adsSettingsProvider.notifier);
-              return Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(
-                      MingCuteIcons.mgc_shopping_bag_1_line,
-                      color: _textPrimary,
-                    ),
-                    title: const Text(
-                      'Remove ads',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: _textPrimary,
-                      ),
-                    ),
-                    trailing: ads.adsRemoved
-                        ? const Icon(
-                            MingCuteIcons.mgc_check_circle_fill,
-                            size: 20,
-                            color: AppColors.action,
-                          )
-                        : const Icon(
-                            MingCuteIcons.mgc_right_line,
-                            size: 16,
-                            color: _textSecondary,
-                          ),
-                    onTap: () => context.push(AppRoutes.removeAds),
-                  ),
-                  if (kDebugMode)
-                    SwitchListTile(
-                      secondary: const Icon(
-                        MingCuteIcons.mgc_forbid_circle_line,
-                        color: _textPrimary,
-                      ),
-                      title: const Text(
-                        'Ads',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          color: _textPrimary,
-                        ),
-                      ),
-                      value: ads.adsEnabled,
-                      activeThumbColor: _textPrimary,
-                      onChanged: (v) => adsCtrl.setAdsEnabled(v),
-                    ),
-                ],
-              );
-            },
+            onTap: () => context.push(AppRoutes.lifetime),
           ),
           ListTile(
             leading: const Icon(

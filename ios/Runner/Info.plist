@@ -28,16 +28,6 @@
 	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Lemonade needs access to your photo library so you can attach images and videos to posts and comments.</string>
-	<!-- AdMob app ID (Google sample / test). Replace before production. -->
-	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
-	<key>SKAdNetworkItems</key>
-	<array>
-		<dict>
-			<key>SKAdNetworkIdentifier</key>
-			<string>cstr6suwn9.skadnetwork</string>
-		</dict>
-	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

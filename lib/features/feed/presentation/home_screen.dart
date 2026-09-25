@@ -5,9 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:bluerum/app/providers.dart';
-import 'package:bluerum/features/ads/data/ads_settings.dart';
-import 'package:bluerum/features/ads/domain/ads_config.dart';
 import 'package:bluerum/features/feed/data/feed_view_settings.dart';
+import 'package:bluerum/features/subscription/data/subscription_providers.dart';
 import 'package:bluerum/features/auth/data/auth_repository.dart';
 import 'package:bluerum/features/post/presentation/post_detail_route.dart';
 import 'package:bluerum/features/post/presentation/post_detail_screen.dart';
@@ -66,7 +65,6 @@ class HomeScreenState extends ConsumerState<HomeScreen>
 
   FeedListIndexMap? _indexMap;
   List<int>? _indexMapPostIds;
-  bool? _indexMapShowAds;
 
   Color _titleColorFrom = const Color(0xFF000000);
   Color _titleColorTo = const Color(0xFF000000);
@@ -104,7 +102,7 @@ class HomeScreenState extends ConsumerState<HomeScreen>
     _auth = ref.read(authRepositoryProvider);
     _activeAuthToken = _auth.jwt;
     _activeInstanceUrl = _auth.activeInstanceUrl;
-    // Home owns the global phase listenable so in-feed ads share idle/fling edges.
+    // Home owns the global scroll phase listenable for shared viewport state.
     _phaseController = FeedScrollPhaseController(
       listenable: feedScrollPhaseListenable,
     );
@@ -272,7 +270,6 @@ class HomeScreenState extends ConsumerState<HomeScreen>
     final current = ref.read(feedViewSettingsProvider);
     if (current == mode) return;
     final postIds = ref.read(feedControllerProvider).postIds;
-    final showAds = ref.read(adsSettingsProvider).showAds;
     final visibleTop =
         MediaQuery.paddingOf(context).top +
         ShellChrome.chromeHeight -
@@ -283,7 +280,6 @@ class HomeScreenState extends ConsumerState<HomeScreen>
     final anchor = captureFeedScrollAnchor(
       sliverKey: _postsSliverKey,
       postIds: postIds,
-      showAds: showAds,
       visibleTop: visibleTop,
       visibleBottom: MediaQuery.sizeOf(context).height,
     );
@@ -299,7 +295,6 @@ class HomeScreenState extends ConsumerState<HomeScreen>
           sliverKey: _postsSliverKey,
           anchor: anchor,
           postIds: ref.read(feedControllerProvider).postIds,
-          showAds: ref.read(adsSettingsProvider).showAds,
           currentOffset: position.pixels,
         );
         if (targetOffset != null &&
@@ -385,32 +380,26 @@ class HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  FeedListIndexMap _indexMapFor(List<int> postIds, bool showAds) {
-    if (_indexMap != null &&
-        identical(_indexMapPostIds, postIds) &&
-        _indexMapShowAds == showAds) {
+  FeedListIndexMap _indexMapFor(List<int> postIds) {
+    if (_indexMap != null && identical(_indexMapPostIds, postIds)) {
       return _indexMap!;
     }
     _indexMapPostIds = postIds;
-    _indexMapShowAds = showAds;
-    _indexMap = buildHomeFeedIndexMap(
-      postIds: postIds,
-      showAds: showAds,
-      postsPerAd: AdsConfig.homePostsPerAd,
-    );
+    _indexMap = buildHomeFeedIndexMap(postIds: postIds);
     return _indexMap!;
   }
 
   int? _findChildIndex(Key key) {
     if (key is! ValueKey) return null;
     final feed = ref.read(feedControllerProvider);
-    final showAds = ref.read(adsSettingsProvider).showAds;
-    return _indexMapFor(feed.postIds, showAds).indexForKeyValue(key.value);
+    return _indexMapFor(feed.postIds).indexForKeyValue(key.value);
   }
 
   @override
   Widget build(BuildContext context) {
     final viewMode = ref.watch(feedViewSettingsProvider);
+    ref.watch(lifetimePurchaseBootstrapProvider);
+    final lifetimeOwned = ref.watch(lifetimeEntitlementProvider).lifetimeOwned;
     final topInset = MediaQuery.paddingOf(context).top;
     const headerHeight = ShellChrome.chromeHeight;
     final headerExtent = topInset + headerHeight;
@@ -540,6 +529,7 @@ class HomeScreenState extends ConsumerState<HomeScreen>
           HomeFeedHeader(
             viewMode: viewMode,
             onViewModeSelected: _selectViewMode,
+            lifetimeOwned: lifetimeOwned,
             topInset: topInset,
             titleAnimController: _titleAnimController,
             titleScale: _titleScale,

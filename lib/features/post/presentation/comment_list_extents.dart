@@ -1,4 +1,3 @@
-import 'package:bluerum/features/ads/domain/ads_placement.dart';
 import 'package:bluerum/features/post/presentation/comment_body_vm.dart';
 import 'package:bluerum/features/post/presentation/comment_list_memory.dart';
 import 'package:bluerum/features/post/presentation/comment_thread_flatten.dart';
@@ -7,8 +6,6 @@ import 'package:bluerum/features/post/presentation/comment_thread_flatten.dart';
 export 'package:bluerum/core/utils/time_ago.dart'
     show formatCommentTimeAgo, clearCommentTimeAgoCache;
 
-/// Fixed chrome heights for list extent math (match [InFeedNativeAd] comment).
-const double kCommentListAdHeight = 112;
 const double kCommentListFooterHeight = 56;
 const double kCommentListHeaderFallback = 280;
 
@@ -44,7 +41,6 @@ double estimateListOffsetForIndex({
   required CommentListMemoryPolicy memory,
   required double contentWidth,
   double headerHeight = kCommentListHeaderFallback,
-  double adHeight = kCommentListAdHeight,
   double maxMediaHeight = 440,
 }) {
   if (listIndex <= 0) return 0;
@@ -57,11 +53,7 @@ double estimateListOffsetForIndex({
 
   for (var i = 0; i < upto; i++) {
     final e = body[i];
-    if (e.isAd) {
-      offset += adHeight;
-      continue;
-    }
-    final rowIndex = e.rowIndex!;
+    final rowIndex = e.rowIndex;
     if (rowIndex < 0 || rowIndex >= rows.length) {
       offset += memory.averageHeight();
       continue;
@@ -69,11 +61,9 @@ double estimateListOffsetForIndex({
     final row = rows[rowIndex];
     final id = row.cv.comment.id;
     final measured = memory.heightOf(id);
-    final vm = bodyVms.peek(id) ??
-        bodyVms.obtain(
-          commentId: id,
-          content: row.cv.comment.content,
-        );
+    final vm =
+        bodyVms.peek(id) ??
+        bodyVms.obtain(commentId: id, content: row.cv.comment.content);
     offset += estimateCommentRowHeight(
       bodyVm: vm,
       contentWidth: contentWidth,

@@ -1,7 +1,5 @@
 import 'package:flutter/foundation.dart';
 
-import 'package:bluerum/features/ads/domain/ads_config.dart';
-import 'package:bluerum/features/ads/domain/ads_placement.dart';
 import 'package:bluerum/features/post/presentation/comment_body_vm.dart';
 import 'package:bluerum/features/post/presentation/comment_thread_flatten.dart';
 import 'package:bluerum/shared/models/comment.dart';
@@ -52,7 +50,6 @@ final class CommentThreadController extends ChangeNotifier {
   int revision = 0;
 
   List<CommentDisplayEntry>? _displayEntries;
-  bool? _displayShowAds;
   int _displayRevision = -1;
   Map<int, int>? _rowIndexToDisplayIndex;
 
@@ -198,28 +195,18 @@ final class CommentThreadController extends ChangeNotifier {
   CommentBodyVm bodyVmFor(CommentView cv) =>
       bodyVms.obtain(commentId: cv.comment.id, content: cv.comment.content);
 
-  /// Comment rows + optional in-feed ads (root-comment cadence).
+  /// Comment rows in flattened display order.
   ///
-  /// Cached until [revision] / [showAds] changes so list build does not
+  /// Cached until [revision] changes so list build does not
   /// re-walk the tree every frame.
-  List<CommentDisplayEntry> bodyEntries({
-    required bool showAds,
-    int? rootsPerAd,
-  }) {
-    final roots = rootsPerAd ?? AdsConfig.commentRootsPerAd;
-    if (_displayEntries != null &&
-        _displayShowAds == showAds &&
-        _displayRevision == revision) {
+  List<CommentDisplayEntry> bodyEntries() {
+    if (_displayEntries != null && _displayRevision == revision) {
       return _displayEntries!;
     }
-    _displayShowAds = showAds;
     _displayRevision = revision;
-    final entries = buildCommentDisplayEntries(
-      rowCount: rows.length,
-      isRootAt: (i) => rows[i].depth == 0,
-      rootsPerAd: roots,
-      showAds: showAds,
-    );
+    final entries = [
+      for (var i = 0; i < rows.length; i++) CommentDisplayEntry.comment(i),
+    ];
     _displayEntries = entries;
     final map = <int, int>{};
     for (var i = 0; i < entries.length; i++) {
@@ -231,8 +218,8 @@ final class CommentThreadController extends ChangeNotifier {
   }
 
   /// Flat row index → index inside [bodyEntries] (O(1) for findChildIndex).
-  int? displayIndexForRow(int rowIndex, {required bool showAds}) {
-    bodyEntries(showAds: showAds);
+  int? displayIndexForRow(int rowIndex) {
+    bodyEntries();
     return _rowIndexToDisplayIndex?[rowIndex];
   }
 

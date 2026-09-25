@@ -1,5 +1,12 @@
 import 'package:bluerum/shared/models/comment.dart';
 
+/// One flattened comment row in display order.
+final class CommentDisplayEntry {
+  const CommentDisplayEntry.comment(this.rowIndex);
+
+  final int rowIndex;
+}
+
 /// One flattened comment row for list paint (data-plane output).
 final class CommentFlatRow {
   const CommentFlatRow({
@@ -97,7 +104,7 @@ List<CommentFlatRow> flattenCommentThread({
   return rows;
 }
 
-/// Build rowIndex → list body index map (ads interleaved later by placement).
+/// Build rowIndex → list body index map.
 Map<int, int> commentIdToRowIndex(List<CommentFlatRow> rows) {
   final map = <int, int>{};
   for (var i = 0; i < rows.length; i++) {

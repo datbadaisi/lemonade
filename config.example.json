@@ -1,8 +1,4 @@
 {
-  "ADMOB_ANDROID_APP_ID": "ca-app-pub-3940256099942544~3347511713",
-  "ADMOB_IOS_APP_ID": "ca-app-pub-3940256099942544~1458002511",
-  "ADMOB_ANDROID_NATIVE_AD_UNIT_ID": "ca-app-pub-3940256099942544/2247696110",
-  "ADMOB_IOS_NATIVE_AD_UNIT_ID": "ca-app-pub-3940256099942544/3986624511",
   "SUPPORT_EMAIL": "support@example.com",
   "PRIVACY_POLICY_URL": "https://example.com/privacy",
   "TERMS_OF_SERVICE_URL": "https://example.com/terms"

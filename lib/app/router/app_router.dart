@@ -18,7 +18,7 @@ import '../../features/shell/presentation/main_shell.dart';
 import '../../features/shell/presentation/shell_chrome.dart';
 import '../../features/post/data/post_repository_impl.dart';
 import '../../features/post/presentation/post_detail_screen.dart';
-import '../../features/subscription/presentation/remove_ads_screen.dart';
+import '../../features/subscription/presentation/lifetime_support_screen.dart';
 import '../providers.dart';
 import 'chat_detail_route.dart';
 import 'routes.dart';
@@ -116,15 +116,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/c/:name',
-        builder: (context, state) => CommunityDetailScreen(
-          communityName: state.pathParameters['name'],
-        ),
+        builder: (context, state) =>
+            CommunityDetailScreen(communityName: state.pathParameters['name']),
       ),
       GoRoute(
         path: '/u/:username',
-        builder: (context, state) => ProfileScreen(
-          username: state.pathParameters['username'],
-        ),
+        builder: (context, state) =>
+            ProfileScreen(username: state.pathParameters['username']),
       ),
       GoRoute(
         path: AppRoutes.createPost,
@@ -164,8 +162,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        path: AppRoutes.removeAds,
-        builder: (context, state) => const RemoveAdsScreen(),
+        path: AppRoutes.lifetime,
+        builder: (context, state) => const LifetimeSupportScreen(),
       ),
       GoRoute(
         path: AppRoutes.blocks,

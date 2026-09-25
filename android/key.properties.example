@@ -7,5 +7,3 @@ storeFile=upload-keystore.jks
 storePassword=YOUR_KEYSTORE_PASSWORD
 keyAlias=upload
 keyPassword=YOUR_KEY_PASSWORD
-# Optional: Production AdMob Android App ID (defaults to Google sample test ID if omitted)
-# admobAppId=ca-app-pub-9997544990020242~1378929763
