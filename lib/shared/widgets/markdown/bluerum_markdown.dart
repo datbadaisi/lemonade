@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 
@@ -59,7 +59,7 @@ MarkdownStyleSheet sanitizeMarkdownStyleSheet(MarkdownStyleSheet sheet) {
 }
 
 /// Renders fenced `pre` content with soft-wrap instead of a horizontal
-/// scrollbar (flutter_markdown default).
+/// scrollbar (flutter_markdown_plus default).
 class _WrappingPreBuilder extends MarkdownElementBuilder {
   _WrappingPreBuilder(this.codeStyle, {required this.selectable});
 
@@ -68,7 +68,7 @@ class _WrappingPreBuilder extends MarkdownElementBuilder {
 
   @override
   Widget? visitText(md.Text text, TextStyle? preferredStyle) {
-    // Match flutter_markdown formatText: drop trailing fence newline.
+    // Match flutter_markdown_plus formatText: drop trailing fence newline.
     final content = text.text.replaceAll(RegExp(r'\n$'), '');
     final span = TextSpan(style: codeStyle, text: content);
     if (selectable) {
@@ -84,7 +84,7 @@ class BluerumMarkdown extends StatelessWidget {
   final MarkdownStyleSheet? styleSheet;
   final void Function(String?, String?, String?)? onTapLink;
   final bool selectable;
-  final Widget Function(dynamic)? sizedImageBuilder;
+  final MarkdownImageBuilder? imageBuilder;
   final bool softLineBreak;
 
   const BluerumMarkdown({
@@ -93,7 +93,7 @@ class BluerumMarkdown extends StatelessWidget {
     this.styleSheet,
     this.onTapLink,
     this.selectable = false,
-    this.sizedImageBuilder,
+    this.imageBuilder,
     this.softLineBreak = false,
   });
 
@@ -115,7 +115,7 @@ class BluerumMarkdown extends StatelessWidget {
       builders: _builders(sheet),
       onTapLink: onTapLink,
       selectable: selectable,
-      sizedImageBuilder: sizedImageBuilder,
+      imageBuilder: imageBuilder,
       softLineBreak: softLineBreak,
     );
   }
@@ -150,7 +150,7 @@ class BluerumMarkdown extends StatelessWidget {
         styleSheet: styleSheet,
         onTapLink: onTapLink,
         selectable: selectable,
-        sizedImageBuilder: sizedImageBuilder,
+        imageBuilder: imageBuilder,
         softLineBreak: softLineBreak,
       ));
 
@@ -179,7 +179,7 @@ class _SpoilerWidget extends StatefulWidget {
   final MarkdownStyleSheet? styleSheet;
   final void Function(String?, String?, String?)? onTapLink;
   final bool selectable;
-  final Widget Function(dynamic)? sizedImageBuilder;
+  final MarkdownImageBuilder? imageBuilder;
   final bool softLineBreak;
 
   const _SpoilerWidget({
@@ -188,7 +188,7 @@ class _SpoilerWidget extends StatefulWidget {
     this.styleSheet,
     this.onTapLink,
     this.selectable = false,
-    this.sizedImageBuilder,
+    this.imageBuilder,
     required this.softLineBreak,
   });
 
@@ -246,7 +246,7 @@ class _SpoilerWidgetState extends State<_SpoilerWidget> {
                     styleSheet: widget.styleSheet,
                     onTapLink: widget.onTapLink,
                     selectable: widget.selectable,
-                    sizedImageBuilder: widget.sizedImageBuilder,
+                    imageBuilder: widget.imageBuilder,
                     softLineBreak: widget.softLineBreak,
                   ),
                 )

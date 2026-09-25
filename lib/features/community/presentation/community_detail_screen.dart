@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluerum/app/providers.dart';
 import 'package:bluerum/app/theme/app_bar_chrome.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bluerum/core/network/lemmy_api_client.dart';

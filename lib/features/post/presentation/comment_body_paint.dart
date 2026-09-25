@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:bluerum/features/post/presentation/comment_body_vm.dart';
 import 'package:bluerum/shared/widgets/markdown/bluerum_markdown.dart';
 

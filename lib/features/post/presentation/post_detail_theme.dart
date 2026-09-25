@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:bluerum/shared/widgets/markdown/bluerum_markdown.dart';
 
 /// Design tokens for post-detail (matched to feed PostCard).

@@ -10,7 +10,7 @@ import 'package:bluerum/app/theme/app_bar_chrome.dart';
 import 'package:bluerum/app/theme/app_colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bluerum/core/network/lemmy_api_client.dart';
 import 'package:bluerum/core/utils/error_utils.dart';
@@ -1731,8 +1731,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           );
                         }
                       },
-                      sizedImageBuilder: (config) {
-                        final imgUrl = config.uri.toString();
+                      imageBuilder: (uri, title, alt) {
+                        final imgUrl = uri.toString();
                         return CommentMediaWidget(
                           item: MediaItem(url: imgUrl, type: MediaType.image),
                           allMedia: [
